@@ -9,6 +9,7 @@ exports.run = async (client, message, args, prefix) => {
 	let ENCRYPTED = false;
 
 	let userArgs = await FindUserargs(message, args, server, prefix);
+	console.log(userArgs);
 	if (userArgs == undefined) {
 		message.channel.send({ embeds: [new EmbedBuilder().setDescription("Link your account")] });
 		return;
@@ -58,7 +59,10 @@ exports.run = async (client, message, args, prefix) => {
 	});
 
 	function getMatch(data) {
-		console.log(data);
+		if (data == undefined) {
+			message.channel.send({ embeds: [new EmbedBuilder().setDescription("Something went wrong... check if your parameters are correct.")] });
+			return;
+		}
 
 		/**
         this switch function takes the array, and rearranges them so the first user is the user typed the command
@@ -150,7 +154,7 @@ exports.run = async (client, message, args, prefix) => {
 
 		let user_elo_change;
 		let opponent_elo_change;
-		if (data.score_changes == null) {
+		if (data.match_type != 2) {
 			user_elo_change = `**Elo change:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no elo change because the match type isn't ranked")\n**Score:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no score because the match type isn't ranked")\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
 			opponent_elo_change = `**Elo change:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no elo change because the match type isn't ranked")\n**Score:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no score because the match type isn't ranked")\n[User profile](https://disrespec.tech/elo/?username=${opponent_username})`;
 		} else {
