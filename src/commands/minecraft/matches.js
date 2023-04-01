@@ -9,7 +9,6 @@ exports.run = async (client, message, args, prefix) => {
 	let ENCRYPTED = false;
 
 	let userArgs = await FindUserargs(message, args, server, prefix);
-	console.log(userArgs);
 	if (userArgs == undefined) {
 		message.channel.send({ embeds: [new EmbedBuilder().setDescription("Link your account")] });
 		return;
@@ -93,7 +92,6 @@ exports.run = async (client, message, args, prefix) => {
 
 				break;
 			case false:
-				console.log("false");
 				data.members.sort((a, b) => {
 					if (a.nickname.toLowerCase() === userArgs.toLowerCase()) {
 						return -1; // put User to the top
