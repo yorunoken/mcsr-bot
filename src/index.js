@@ -69,13 +69,11 @@ client.on("ready", async () => {
 
 client.on("guildCreate", (guild) => {
 	const guilds = guild.channels.cache.find((g) => g.type === 0);
-	try{
-		guilds.send(
-			`Hello, I'm Mcsr-bot and thank you for inviting me! I am a minecraft bot created by yoru#9267. my default prefix is \`?\`. To start using the bot, you can set your osu! username by doing \`?link "your username"\`. to get a full list of all of the commands I have, please do \`?help\`, and to search for what specific commands do, do \`?help commandname\`. hope you enjoy! `,
-		);
-	}catch(e){
-		console.log(e)
-	}
+	/**
+	guilds.send(
+		`Hello, I'm Mcsr-bot and thank you for inviting me! I am a minecraft bot created by yoru#9267. my default prefix is \`?\`. To start using the bot, you can set your osu! username by doing \`?link "your username"\`. to get a full list of all of the commands I have, please do \`?help\`, and to search for what specific commands do, do \`?help commandname\`. hope you enjoy! `,
+	);
+	*/
 });
 
 client.on("messageCreate", (message) => {
