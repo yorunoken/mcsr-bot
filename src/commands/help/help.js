@@ -40,7 +40,8 @@ exports.run = async (client, message, args, prefix) => {
 		// .setTitle(`Available in ${client.guilds.cache.size} servers, with ${categories.osu.length+categories.general.length+categories.fun.length+categories.help.length+categories.chess.length} commands!`)
 
 		.setFields(
-			{ name: "**Commands: **", value: `\`${categories.minecraft.join("` `")}\``, inline: false },
+			{ name: "**Minecraft Commands**", value: `\`${categories.minecraft.join("` `")}\``, inline: false },
+			{ name: "**General Commands**", value: `\`${categories.general.join("` `")}\``, inline: false },
 			{ name: "**Number of servers:**", value: `${client.guilds.cache.size}`, inline: true },
 			{
 				name: "**Number of commands:**",
