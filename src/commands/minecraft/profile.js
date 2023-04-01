@@ -57,7 +57,7 @@ exports.run = async (client, message, args, prefix) => {
 		combined_records.lose += record.lose;
 		combined_records.draw += record.draw;
 	}
-	const winrate = (combined_records.win / (combined_records.draw + combined_records.lose)) * 100;
+	const winrate = (combined_records.win / (combined_records.win + combined_records.draw + combined_records.lose)) * 100;
 
 	const seasons_classic = `**Classic**\n**wins:** \`${data.records[1].win}\` **losses:** \`${data.records[1].lose}\` **draws:** \`${data.records[1].draw}\``;
 	const seasons_1 = `**Season 1**\n**wins:** \`${data.records[2].win}\` **losses:** \`${data.records[2].lose}\` **draws:** \`${data.records[2].draw}\``;
