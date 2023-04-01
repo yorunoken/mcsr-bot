@@ -57,12 +57,12 @@ exports.run = async (client, message, args, prefix) => {
 		combined_records.lose += record.lose;
 		combined_records.draw += record.draw;
 	}
-	const winrate = combined_records.win / (combined_records.draw + combined_records.lose);
+	const winrate = (combined_records.win / (combined_records.draw + combined_records.lose)) * 100;
 
 	const seasons_classic = `**Classic**\n**wins:** \`${data.records[1].win}\` **losses:** \`${data.records[1].lose}\` **draws:** \`${data.records[1].draw}\``;
 	const seasons_1 = `**Season 1**\n**wins:** \`${data.records[2].win}\` **losses:** \`${data.records[2].lose}\` **draws:** \`${data.records[2].draw}\``;
 
-	const first_row = `**Personal best time:** \`${pb_time}\` • **Winrate:** \`${winrate.toFixed(2)}\`\n`;
+	const first_row = `**Personal best time:** \`${pb_time}\` • **Winrate:** \`${winrate.toFixed(2)}%\`\n`;
 	const second_row = `**Highest winstreak:** \`${highest_streak}\` • **Current winstreak:** \`${curr_streak}\`\n`;
 	const third_row = `**Best elo:** \`${elo_best}\` • **Elo last season:** \`${elo_last_season}\`\n`;
 	const fourth_row = `**Total plays:** \`${total_plays}\` • **This season:** \`${season_plays}\`\n`;
@@ -85,7 +85,7 @@ exports.run = async (client, message, args, prefix) => {
 				value: `${seasons_classic}\n${seasons_1}`,
 			},
 		)
-		.setFooter({text: `Stats by mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png"})
+		.setFooter({ text: `Stats by mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
 	message.channel.send({ embeds: [embed] });
 };
 exports.name = "profile";
