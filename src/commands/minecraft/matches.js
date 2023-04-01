@@ -160,11 +160,14 @@ exports.run = async (client, message, args, prefix) => {
 
 		let match_type;
 		switch (data.match_type) {
+			case 1:
+				match_type = "Casual";
+				break;
 			case 2:
 				match_type = "Ranked";
 				break;
 			case 3:
-				match_type = "Casual";
+				match_type = "Private";
 				break;
 		}
 
