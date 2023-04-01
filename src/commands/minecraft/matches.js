@@ -155,11 +155,11 @@ exports.run = async (client, message, args, prefix) => {
 		let user_elo_change;
 		let opponent_elo_change;
 		if (data.match_type != 2) {
-			user_elo_change = `**Elo change:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no elo change because the match type isn't ranked")\n**Score:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no score because the match type isn't ranked")\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
-			opponent_elo_change = `**Elo change:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no elo change because the match type isn't ranked")\n**Score:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no score because the match type isn't ranked")\n[User profile](https://disrespec.tech/elo/?username=${opponent_username})`;
+			user_elo_change = `**Elo change:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no elo change because the match type isn't ranked")\n**Prev. elo:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no score because the match type isn't ranked")\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
+			opponent_elo_change = `**Elo change:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no elo change because the match type isn't ranked")\n**Prev. elo:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no  because the match type isn't ranked")\n[User profile](https://disrespec.tech/elo/?username=${opponent_username})`;
 		} else {
-			user_elo_change = `**Elo change:** \`${data.score_changes[0].change}\`\n**Score:** \`${data.score_changes[0].score}\`\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
-			opponent_elo_change = `**Elo change:** \`${data.score_changes[1].change}\`\n**Score:** \`${data.score_changes[1].score}\`\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
+			user_elo_change = `**Elo change:** \`${data.score_changes[0].change}\`\n**Prev. elo:** \`${data.score_changes[0].score}\`\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
+			opponent_elo_change = `**Elo change:** \`${data.score_changes[1].change}\`\n**Prev. elo:** \`${data.score_changes[1].score}\`\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
 		}
 
 		let match_type;
@@ -201,7 +201,7 @@ exports.run = async (client, message, args, prefix) => {
 	}
 };
 exports.name = "matches";
-exports.aliases = ["matches", "matchrecent", "rr", "rankr", "ranked", "mcrecent", "mcr", "matches"];
+exports.aliases = ["matches", "matchrecent", "recentmatch", "match", "rr"];
 exports.description = [
 	'get a recent mcsr ranked match\n\n**Parameters**\n`username` username of the player you want to get the recent match of. Can be blank but you need to link your account by typing "{prefix}link {userame} server=minecraft"\n`-i (number)` replace (number) with whichever recent match you want, defaults to 1. 2 means 2nd recent match 3 means 3rd etc.\n`-casual` gets the latest casual match\n`-ranked` gets the latest ranked match\n[mcsr ranked website](https://mcsrranked.com/)\n[user profile website](https://disrespec.tech/elo/)',
 ];
