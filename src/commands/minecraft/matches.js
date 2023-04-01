@@ -190,7 +190,9 @@ exports.run = async (client, message, args, prefix) => {
 					inline: true,
 				},
 			)
-			.setThumbnail(user_avatar_url);
+			.setThumbnail(user_avatar_url)
+			.setFooter({ text: `Stats by mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
+
 		return embed;
 	}
 };
