@@ -1,8 +1,11 @@
 const { EmbedBuilder } = require("discord.js");
 const { FindUserargs } = require("../../utils/findUserargs.js");
+const { MCSR } = require("mcsr-api");
 
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
+	const api = new MCSR();
+
 	let server = "minecraft";
 
 	var userArgs = await FindUserargs(message, args, server, prefix);
@@ -20,14 +23,14 @@ exports.run = async (client, message, args, prefix) => {
 	const uuid = mojang_response.id; 
     */
 
-	const ranked_base_URL = "https://mcsrranked.com/api";
-	const ranked_response = await fetch(`${ranked_base_URL}/users/${userArgs}`).then((res) => res.json());
-	const data = ranked_response.data;
-
-	if (ranked_response.status != "success") {
-		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`The user ${userArgs} does not exist in the database`)] });
+	let data;
+	try {
+		data = await api.getUserStats(userArgs);
+	} catch (err) {
+		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
 		return;
 	}
+
 	const avatar_url = `https://mc-heads.net/avatar/${data.uuid}/100.png`;
 	const username = data.nickname;
 	const curr_elo = data.elo_rate;
