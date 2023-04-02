@@ -147,9 +147,11 @@ exports.run = async (client, message, args, prefix) => {
 		const opponent_curr_rank = data.members[1].elo_rank;
 
 		const total_seconds = data.final_time / 1000;
-		let minutes = Math.floor(total_seconds / 60);
-		let seconds = total_seconds % 60;
-		const match_duration = `${minutes.toFixed()}:${seconds.toFixed()}`;
+		let minutes = Math.floor(total_seconds / 60)
+			.toFixed()
+			.toString();
+		let seconds = (total_seconds % 60).toFixed().toString().padStart(2, "0");
+		const match_duration = `${minutes}:${seconds}`;
 
 		const match_seed = data.match_seed;
 		const match_date = new Date(1680292365).getTime();

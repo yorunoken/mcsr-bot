@@ -53,9 +53,11 @@ exports.run = async (client, message, args, prefix) => {
 	const elo_last_season = data.prev_elo_rate.toLocaleString();
 
 	const total_seconds = data.best_record_time / 1000;
-	let minutes = Math.floor(total_seconds / 60);
-	let seconds = total_seconds % 60;
-	let pb_time = `${minutes.toFixed()}:${seconds.toFixed()}`;
+	let minutes = Math.floor(total_seconds / 60)
+		.toFixed()
+		.toString();
+	let seconds = (total_seconds % 60).toFixed().toString().padStart(2, "0");
+	let pb_time = `${minutes}:${seconds}`;
 	if (data.best_record_time == 0) {
 		pb_time = `None`;
 	}
@@ -94,11 +96,11 @@ exports.run = async (client, message, args, prefix) => {
 				inline: false,
 			},
 			{
-				name: "Modes <:homi:1083167118385745980>",
+				name: "Season 1 <:homi:1083167118385745980>",
 				value: `${ranked}\n${casual}`,
 			},
 		)
-		.setFooter({ text: `Stats by mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
+		.setFooter({ text: `Stats from mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
 	message.channel.send({ embeds: [embed] });
 };
 exports.name = "profile";
