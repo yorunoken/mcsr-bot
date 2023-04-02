@@ -160,16 +160,22 @@ exports.run = async (client, message, args, prefix) => {
 		switch (data.winner) {
 			case undefined || null:
 				match_status = "The match was a draw";
+				break;
 			default:
 				const winner_uuid = data.winner;
 				const winner_object = data.members.find((member) => member.uuid === winner_uuid);
 				const winner_nickname = winner_object.nickname;
 				match_status = `\`${winner_nickname}\` won the match`;
+				break;
 		}
 
 		let forfeit = "";
 		if (data.forfeit) {
-			forfeit = ` (forfeit)`;
+			if (data.winner == null) {
+				forfeit = "";
+			} else {
+				forfeit = ` (forfeit)`;
+			}
 		}
 
 		let user_elo_change;
