@@ -1,9 +1,9 @@
 const fs = require("fs");
+const { MCSR } = require("mcsr-api");
 
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
-
-	let server = "minecraft";
+	const api = new MCSR();
 
 	let string = args.join(" ").match(/"(.*?)"/);
 	if (string) {
@@ -17,16 +17,15 @@ exports.run = async (client, message, args, prefix) => {
 		return;
 	}
 
-	const ranked_base_URL = "https://mcsrranked.com/api";
-	const ranked_response = await fetch(`${ranked_base_URL}/users/${username}`).then((res) => res.json());
-	const data = ranked_response.data;
-
-	if (ranked_response.status != "success") {
-		message.reply(`**The user \`${username}\` does not exist in the Minecraft database.**`);
+	let user;
+	try {
+		user = await api.getUserStats(username);
+	} catch (err) {
+		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
 		return;
 	}
 
-	var user_id = data.uuid;
+	var user_id = user.uuid;
 	// Read the JSON file
 	fs.readFile("./user-data.json", (error, data) => {
 		if (error) {

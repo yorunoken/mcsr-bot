@@ -1,16 +1,18 @@
+const { MCSR } = require("mcsr-api");
+
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
 
 	message.channel.send(`Pong! 🏓`).then(async (msg) => {
 		let time = msg.createdTimestamp - message.createdTimestamp;
+		const api = new MCSR();
 
 		const profile_start_time = Date.now();
-		const ranked_base_URL = "https://mcsrranked.com/api";
-		await fetch(`${ranked_base_URL}/users/yorunoken`).then((res) => res.json());
+		await api.getUserStats("yorunoken");
 		let profile_time = Date.now() - profile_start_time;
 
 		const matches_start_time = Date.now();
-		await fetch(`${ranked_base_URL}/users/yorunoken/matches`).then((res) => res.json());
+		await api.getRecentMatch("yorunoken");
 		let matches_profile_time = Date.now() - matches_start_time;
 
 		msg.edit(`Pong! 🏓\n(Discord API latency: ${time}ms)\n(ranked profile API latency: ${profile_time}ms)\n(ranked matches API latency: ${matches_profile_time}ms)`);
