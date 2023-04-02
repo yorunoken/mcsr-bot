@@ -27,7 +27,8 @@ async function FindUserargs(message, args, server, prefix) {
 						try {
 							userargs = userData[mentionedUser.id].MinecraftUserID;
 						} catch (err) {
-							message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`No osu! user found for ${mentionedUser.tag}`)] });
+							message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`No minecraft user found for ${mentionedUser.tag}`)] });
+							return;
 						}
 					} else {
 						let string = args.join(" ").match(/"(.*?)"/);

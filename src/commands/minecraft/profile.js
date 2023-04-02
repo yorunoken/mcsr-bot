@@ -74,7 +74,7 @@ exports.run = async (client, message, args, prefix) => {
 		.setColor("Purple")
 		.setAuthor({
 			name: `${username} - ${curr_elo}elo (#${curr_rank})`,
-			url: `https://disrespec.tech/elo/?username=${userArgs}`,
+			url: `https://disrespec.tech/elo/?username=${username}`,
 		})
 		.setThumbnail(avatar_url)
 		.setFields(
