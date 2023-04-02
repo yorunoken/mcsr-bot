@@ -33,8 +33,15 @@ exports.run = async (client, message, args, prefix) => {
 
 	const avatar_url = `https://mc-heads.net/avatar/${data.uuid}/100.png`;
 	const username = data.nickname;
-	const curr_elo = data.elo_rate;
-	const curr_rank = data.elo_rank;
+	let curr_elo = data.elo_rate;
+	if (curr_elo == -1) {
+		curr_elo = 0;
+	}
+
+	let curr_rank = data.elo_rank;
+	if (curr_rank == null) {
+		curr_rank = "-";
+	}
 
 	const total_plays = data.total_played.toLocaleString();
 	const season_plays = data.season_played.toLocaleString();
@@ -48,7 +55,10 @@ exports.run = async (client, message, args, prefix) => {
 	const total_seconds = data.best_record_time / 1000;
 	let minutes = Math.floor(total_seconds / 60);
 	let seconds = total_seconds % 60;
-	const pb_time = `${minutes.toFixed()}:${seconds.toFixed()}`;
+	let pb_time = `${minutes.toFixed()}:${seconds.toFixed()}`;
+	if (data.best_record_time == 0) {
+		pb_time = `None`;
+	}
 
 	const last_played_time = new Date(data.latest_time).getTime();
 
