@@ -1,9 +1,12 @@
 const { EmbedBuilder } = require("discord.js");
 const { FindUserargs } = require("../../utils/findUserargs.js");
+const { MCSR } = require("mcsr-api");
 const fs = require("fs");
 
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
+	const api = new MCSR();
+
 	let server = "minecraft";
 	let index = 0;
 	let ENCRYPTED = false;
@@ -16,6 +19,10 @@ exports.run = async (client, message, args, prefix) => {
 
 	if (args.includes("-i")) {
 		index = args[args.indexOf("-i") + 1];
+		if (isNaN(index)) {
+			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("Please provide an index value")] });
+			return;
+		}
 	}
 
 	let filter = "";
@@ -45,12 +52,22 @@ exports.run = async (client, message, args, prefix) => {
 	    const uuid = mojang_response.id; 
         */
 
-		const ranked_base_URL = "https://mcsrranked.com/api";
-		const ranked_response = await fetch(`${ranked_base_URL}/users/${userArgs}/matches${filter}`).then((res) => res.json());
-		const ranked_data = ranked_response.data;
+		let type_arguments = "";
+		if (args.includes("-casual")) {
+			type_arguments = 1;
+		}
+		if (args.includes("-ranked")) {
+			type_arguments = 2;
+		}
+		if (args.includes("-private")) {
+			type_arguments = 3;
+		}
 
-		if (ranked_response.status != "success") {
-			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`The user ${userArgs} does not exist in the database`)] });
+		let ranked_data;
+		try {
+			ranked_data = await api.getRecentMatch(userArgs, type_arguments);
+		} catch (err) {
+			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
 			return;
 		}
 
@@ -59,8 +76,11 @@ exports.run = async (client, message, args, prefix) => {
 
 	function getMatch(data) {
 		if (data == undefined) {
-			message.channel.send({ embeds: [new EmbedBuilder().setDescription("Something went wrong... check if your parameters are correct.")] });
-			return;
+			return new EmbedBuilder().setColor("Purple").setDescription("No recent matches with the filters found.");
+		}
+
+		if (data == undefined) {
+			return new EmbedBuilder().setColor("Purple").setDescription("Something went wrong... check if your parameters are correct.");
 		}
 
 		/**
