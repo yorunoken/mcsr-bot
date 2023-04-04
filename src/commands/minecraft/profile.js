@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { FindUserargs } = require("../../utils/findUserargs.js");
+const { findTier } = require("../../utils/findRank.js");
 const { MCSR } = require("mcsr-api");
 
 exports.run = async (client, message, args, prefix) => {
@@ -38,6 +39,11 @@ exports.run = async (client, message, args, prefix) => {
 		curr_elo = 0;
 	}
 
+	const elo_tier = findTier(curr_elo);
+	const curr_tier = elo_tier.tier;
+	const next_tier = elo_tier.nextTier;
+	const elo_needed = elo_tier.eloNeeded;
+
 	let curr_rank = data.elo_rank;
 	if (curr_rank == null) {
 		curr_rank = "-";
@@ -74,8 +80,8 @@ exports.run = async (client, message, args, prefix) => {
 	}
 	const winrate = (combined_records.win / (combined_records.win + combined_records.draw + combined_records.lose)) * 100;
 
-	const ranked = `**Ranked**\n**wins:** \`${data.records[2].win}\` **losses:** \`${data.records[2].lose}\` **draws:** \`${data.records[2].draw}\``;
-	const casual = `**Casual**\n**wins:** \`${data.records[1].win}\` **losses:** \`${data.records[1].lose}\` **draws:** \`${data.records[1].draw}\``;
+	const ranked_stats = `**Ranked**\n**wins:** \`${data.records[2].win}\` **losses:** \`${data.records[2].lose}\` **draws:** \`${data.records[2].draw}\``;
+	const casual_stats = `**Casual**\n**wins:** \`${data.records[1].win}\` **losses:** \`${data.records[1].lose}\` **draws:** \`${data.records[1].draw}\``;
 
 	const first_row = `**Personal best time:** \`${pb_time}\` • **Winrate:** \`${winrate.toFixed(2)}%\`\n`;
 	const second_row = `**Highest winstreak:** \`${highest_streak}\` • **Current winstreak:** \`${curr_streak}\`\n`;
@@ -96,8 +102,14 @@ exports.run = async (client, message, args, prefix) => {
 				inline: false,
 			},
 			{
+				name: "Tier",
+				value: `**Current tier:** \`${curr_tier}\`\n**Next tier:** \`${next_tier}\`\n**Elo needed:** \`${elo_needed}\``,
+				inline: true,
+			},
+			{
 				name: "Season 1 <:homi:1083167118385745980>",
-				value: `${ranked}\n${casual}`,
+				value: `${ranked_stats}\n${casual_stats}`,
+				inline: true,
 			},
 		)
 		.setFooter({ text: `Stats from mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
