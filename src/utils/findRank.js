@@ -1,3 +1,8 @@
+const coal = "<:coal:1092904874791931965>";
+const iron = "<:iron:1092904882584965230>";
+const gold = "<:gold:1092904879749611678>";
+const diamond = "<:diamond:1092904877744734288>";
+
 const tierRanges = {
 	"Coal 1": [0, 199],
 	"Coal 2": [200, 399],
@@ -31,7 +36,39 @@ function findTier(elo) {
 			break;
 		}
 	}
-	return { currElo: _elo, tier: tier, nextTier: nextTier, eloNeeded: eloNeeded };
+
+	let _tier = tier.toLowerCase();
+	switch (true) {
+		case _tier.includes("coal"):
+			emote = coal;
+			break;
+		case _tier.includes("iron"):
+			emote = iron;
+			break;
+		case _tier.includes("gold"):
+			emote = gold;
+			break;
+		case _tier.includes("diamond"):
+			emote = diamond;
+			break;
+	}
+
+	let _nextTier = nextTier.toLowerCase();
+	switch (true) {
+		case _nextTier.includes("coal"):
+			nextEmote = coal;
+			break;
+		case _nextTier.includes("iron"):
+			nextEmote = iron;
+			break;
+		case _nextTier.includes("gold"):
+			nextEmote = gold;
+			break;
+		case _nextTier.includes("diamond"):
+			nextEmote = diamond;
+			break;
+	}
+	return { currElo: _elo, tier: tier, nextTier: nextTier, eloNeeded: eloNeeded, emote: emote, nextEmote: nextEmote };
 }
 
 module.exports = { findTier };

@@ -41,7 +41,11 @@ exports.run = async (client, message, args, prefix) => {
 
 	const elo_tier = findTier(curr_elo);
 	const curr_tier = elo_tier.tier;
+	const curr_emote = elo_tier.emote;
+
 	const next_tier = elo_tier.nextTier;
+	const next_emote = elo_tier.nextEmote;
+
 	const elo_needed = elo_tier.eloNeeded;
 
 	let curr_rank = data.elo_rank;
@@ -103,7 +107,7 @@ exports.run = async (client, message, args, prefix) => {
 			},
 			{
 				name: "Tier",
-				value: `**Current tier:** \`${curr_tier}\`\n**Next tier:** \`${next_tier}\`\n**Elo needed:** \`${elo_needed}\``,
+				value: `**Current tier:** \`${curr_tier}\` ${curr_emote}\n**Next tier:** \`${next_tier}\` ${next_emote}\n**Elo needed:** \`${elo_needed}\``,
 				inline: true,
 			},
 			{

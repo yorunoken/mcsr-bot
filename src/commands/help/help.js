@@ -42,12 +42,6 @@ exports.run = async (client, message, args, prefix) => {
 		.setFields(
 			{ name: "**Minecraft Commands**", value: `\`${categories.minecraft.join("` `")}\``, inline: false },
 			{ name: "**General Commands**", value: `\`${categories.general.join("` `")}\``, inline: false },
-			{ name: "**Number of servers:**", value: `${client.guilds.cache.size}`, inline: true },
-			{
-				name: "**Number of commands:**",
-				value: `${categories.osu.length + categories.general.length + categories.fun.length + categories.saber.length + categories.help.length + categories.chess.length}`,
-				inline: true,
-			},
 		)
 		.setThumbnail(message.author.displayAvatarURL())
 		.setFooter({ text: `for more information on a command, type: ${prefix}help {commandname}` });
