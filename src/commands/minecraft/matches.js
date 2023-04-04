@@ -18,23 +18,25 @@ exports.run = async (client, message, args, prefix) => {
 	}
 
 	if (args.includes("-i")) {
-		index = args[args.indexOf("-i") + 1];
+		index = Number(args[args.indexOf("-i") + 1]) - 1;
 		if (isNaN(index)) {
 			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("Please provide an index value")] });
 			return;
 		}
 	}
 
-	let filter = "";
+	let type_arguments = "";
 	if (args.includes("-casual")) {
-		filter = "?filter=3";
+		type_arguments = 1;
 	}
 	if (args.includes("-ranked")) {
-		filter = "?filter=2";
+		type_arguments = 2;
+	}
+	if (args.includes("-private")) {
+		type_arguments = 3;
 	}
 
 	const unallowed = ["-i", "-ranked", "-casual"];
-
 	fs.readFile("./user-data.json", async (error, data) => {
 		const user_data = JSON.parse(data);
 
@@ -46,26 +48,9 @@ exports.run = async (client, message, args, prefix) => {
 			ENCRYPTED = true;
 		}
 
-		/**
-	    const mojang_base_URL = "https://api.mojang.com/users";
-	    const mojang_response = await fetch(`${mojang_base_URL}/profiles/minecraft/${userArgs}`).then((res) => res.json());
-	    const uuid = mojang_response.id; 
-        */
-
-		let type_arguments = "";
-		if (args.includes("-casual")) {
-			type_arguments = 1;
-		}
-		if (args.includes("-ranked")) {
-			type_arguments = 2;
-		}
-		if (args.includes("-private")) {
-			type_arguments = 3;
-		}
-
 		let ranked_data;
 		try {
-			ranked_data = await api.getRecentMatch(userArgs, type_arguments);
+			ranked_data = await api.getRecentMatch(userArgs, { match_type: type_arguments });
 		} catch (err) {
 			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
 			return;
@@ -77,10 +62,6 @@ exports.run = async (client, message, args, prefix) => {
 	function getMatch(data) {
 		if (data == undefined) {
 			return new EmbedBuilder().setColor("Purple").setDescription("No recent matches with the filters found.");
-		}
-
-		if (data == undefined) {
-			return new EmbedBuilder().setColor("Purple").setDescription("Something went wrong... check if your parameters are correct.");
 		}
 
 		/**
@@ -137,7 +118,7 @@ exports.run = async (client, message, args, prefix) => {
 				break;
 		}
 
-		const user_avatar_url = `https://mc-heads.net/avatar/${data.members[0].uuid}/100.png`;
+		const user_avatar_url = `https://crafatar.com/avatars/${data.members[0].uuid}.png?overlay`;
 		const user_username = data.members[0].nickname;
 		const user_curr_elo = data.members[0].elo_rate;
 		const user_curr_rank = data.members[0].elo_rank;
@@ -154,7 +135,7 @@ exports.run = async (client, message, args, prefix) => {
 		const match_duration = `${minutes}:${seconds}`;
 
 		const match_seed = data.match_seed;
-		const match_date = new Date(1680292365).getTime();
+		const match_date = new Date(data.match_date).getTime();
 
 		let match_status;
 		switch (data.winner) {
@@ -171,10 +152,9 @@ exports.run = async (client, message, args, prefix) => {
 
 		let forfeit = "";
 		if (data.forfeit) {
+			forfeit = ` (forfeit)`;
 			if (data.winner == null) {
 				forfeit = "";
-			} else {
-				forfeit = ` (forfeit)`;
 			}
 		}
 

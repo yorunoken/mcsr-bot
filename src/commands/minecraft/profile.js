@@ -31,7 +31,7 @@ exports.run = async (client, message, args, prefix) => {
 		return;
 	}
 
-	const avatar_url = `https://mc-heads.net/avatar/${data.uuid}/100.png`;
+	const avatar_url = `https://crafatar.com/avatars/${data.uuid}.png?overlay`;
 	const username = data.nickname;
 	let curr_elo = data.elo_rate;
 	if (curr_elo == -1) {
