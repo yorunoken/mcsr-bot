@@ -75,7 +75,7 @@ exports.run = async (client, message, args, prefix) => {
 exports.name = "matcheslist";
 exports.aliases = ["matcheslist", "matchrecentlist", "recentmatchlist", "matchlist", "rrlist", "ml", "rrl"];
 exports.description = [
-	'get a recent mcsr ranked match\n\n**Parameters**\n`username` username of the player you want to get the recent match of. Can be blank but you need to link your account by typing "{prefix}link {userame} server=minecraft"\n`-i (number)` replace (number) with whichever recent match you want, defaults to 1. 2 means 2nd recent match 3 means 3rd etc.\n`-casual` gets the latest casual match\n`-ranked` gets the latest ranked match\n[mcsr ranked website](https://mcsrranked.com/)\n[user profile website](https://disrespec.tech/elo/)',
+	'get a list of recent mcsr ranked matches\n\n**Parameters**\n`username` username of the player you want to get the recent match of. Can be blank but you need to link your account by typing "{prefix}link {userame}\n`-p (number)` replace (number) with your desired page you want, defaults to 1. 2 means 2nd list match 3 means 3rd etc.\n`-casual` gets the list of latest casual match\n`-ranked` gets the list of latest ranked match\n[mcsr ranked website](https://mcsrranked.com/)\n[user profile website](https://disrespec.tech/elo/)',
 ];
 exports.usage = [`matches yorunoken\nranked feinberg -i 4\nranked specnr -casual -i 1`];
 exports.category = ["minecraft"];

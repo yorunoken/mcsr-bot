@@ -1,40 +1,27 @@
 const { EmbedBuilder } = require("discord.js");
 
 async function getMatchesList(matches, ENCRYPTED, userArgs, page) {
-	const start = (page - 1) * 5 + 1;
-	const end = page * 5;
+	const matches_per_page = 5;
+	const start = (page - 1) * matches_per_page;
+	const end = start + matches_per_page;
+	const total_page = Math.ceil(matches.length / matches_per_page);
 
-	let numbers = [];
-	for (i = start; i <= end; i++) {
-		numbers.push(i);
-	}
-	const _1 = numbers[0] - 1;
-	const _2 = numbers[1] - 1;
-	const _3 = numbers[2] - 1;
-	const _4 = numbers[3] - 1;
-	const _5 = numbers[4] - 1;
-
-	const total_page = Math.ceil(matches.length / 5);
 	if (page > total_page) {
 		const embed = new EmbedBuilder().setColor("Purple").setDescription(`Please provide a page value not greater than ${total_page}`);
 		return embed;
 	}
 
-	let match1 = "";
-	let match2 = "";
-	let match3 = "";
-	let match4 = "";
-	let match5 = "";
-
-	if (matches[_1]) match1 = `${getMatchData(matches[_1], _1 + 1, ENCRYPTED, userArgs)}\n`;
-	if (matches[_2]) match2 = `\n${getMatchData(matches[_2], _2 + 1, ENCRYPTED, userArgs)}\n`;
-	if (matches[_3]) match3 = `\n${getMatchData(matches[_3], _3 + 1, ENCRYPTED, userArgs)}\n`;
-	if (matches[_4]) match4 = `\n${getMatchData(matches[_4], _4 + 1, ENCRYPTED, userArgs)}\n`;
-	if (matches[_5]) match5 = `\n${getMatchData(matches[_5], _5 + 1, ENCRYPTED, userArgs)}`;
+	let matchData = [];
+	for (let i = start; i < end; i++) {
+		if (matches[i]) {
+			const match = getMatchData(matches[i], i + 1, ENCRYPTED, userArgs);
+			matchData.push(`${match}\n`);
+		}
+	}
 
 	const embed = new EmbedBuilder()
 		.setColor("Purple")
-		.setDescription(`${match1}${match2}${match3}${match4}${match5}`)
+		.setDescription(matchData.join("\n"))
 		.setFooter({ text: `Page ${page} of ${total_page} | add -p (number) at the end to sort through pages` });
 	return embed;
 }
