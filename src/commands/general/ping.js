@@ -1,16 +1,15 @@
-const { MCSR } = require("mcsr-api");
+const { ranked_api } = require("mcsr-ranked-api");
 
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
 
 	message.channel.send(`Pong! 🏓`).then(async (msg) => {
 		let time = msg.createdTimestamp - message.createdTimestamp;
-		const api = new MCSR();
+		const api = new ranked_api();
 
 		const profile_start_time = Date.now();
 		await api.getUserStats("yorunoken");
 		let profile_time = Date.now() - profile_start_time;
-
 
 		msg.edit(`Pong! 🏓\n(Discord API latency: ${time}ms)\n(ranked profile API latency: ${profile_time}ms)`);
 	});

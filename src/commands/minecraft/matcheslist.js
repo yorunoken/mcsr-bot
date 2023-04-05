@@ -1,12 +1,12 @@
 const { EmbedBuilder } = require("discord.js");
 const { FindUserargs } = require("../../utilities/findUserargs.js");
-const { MCSR } = require("mcsr-api");
+const { ranked_api } = require("mcsr-ranked-api");
 const { getMatchesList } = require("../../utilities/functions/getMatchesList.js");
 const fs = require("fs");
 
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
-	const api = new MCSR();
+	const api = new ranked_api();
 
 	let server = "minecraft";
 	let page = 1;
@@ -41,9 +41,15 @@ exports.run = async (client, message, args, prefix) => {
 	fs.readFile("./user-data.json", async (error, data) => {
 		const user_data = JSON.parse(data);
 
-		if (unallowed.some((word) => args.join("").startsWith(word))) {
-			userArgs = user_data[message.author.id].MinecraftUserID;
+		try {
+			if (unallowed.some((word) => args.join("").startsWith(word))) {
+				userArgs = user_data[message.author.id].MinecraftUserID;
+			}
+		} catch (err) {
+			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`link your account by typing "${prefix}link {userame}`)] });
+			return;
 		}
+
 		if (userArgs.endsWith("!{ENCRYPTED}")) {
 			userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
 			ENCRYPTED = true;

@@ -14,6 +14,6 @@
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
-    "mcsr-api": "^1.1.1"
+    "mcsr-ranked-api": "^1.2.1"
   }
 }

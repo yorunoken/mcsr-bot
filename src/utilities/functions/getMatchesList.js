@@ -14,6 +14,12 @@ async function getMatchesList(matches, ENCRYPTED, userArgs, page) {
 	const _4 = numbers[3] - 1;
 	const _5 = numbers[4] - 1;
 
+	const total_page = Math.ceil(matches.length / 5);
+	if (page > total_page) {
+		const embed = new EmbedBuilder().setColor("Purple").setDescription(`Please provide a page value not greater than ${total_page}`);
+		return embed;
+	}
+
 	let match1 = "";
 	let match2 = "";
 	let match3 = "";
@@ -26,7 +32,10 @@ async function getMatchesList(matches, ENCRYPTED, userArgs, page) {
 	if (matches[_4]) match4 = `\n${getMatchData(matches[_4], _4 + 1, ENCRYPTED, userArgs)}\n`;
 	if (matches[_5]) match5 = `\n${getMatchData(matches[_5], _5 + 1, ENCRYPTED, userArgs)}`;
 
-	const embed = new EmbedBuilder().setColor("Purple").setDescription(`${match1}${match2}${match3}${match4}${match5}`);
+	const embed = new EmbedBuilder()
+		.setColor("Purple")
+		.setDescription(`${match1}${match2}${match3}${match4}${match5}`)
+		.setFooter({ text: `Page ${page} of ${total_page} | add -p (number) at the end to sort through pages` });
 	return embed;
 }
 

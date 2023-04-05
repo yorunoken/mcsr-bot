@@ -1,9 +1,9 @@
 const fs = require("fs");
-const { MCSR } = require("mcsr-api");
+const { ranked_api } = require("mcsr-ranked-api");
 
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
-	const api = new MCSR();
+	const api = new ranked_api();
 
 	let string = args.join(" ").match(/"(.*?)"/);
 	if (string) {

@@ -1,11 +1,11 @@
 const { EmbedBuilder } = require("discord.js");
 const { FindUserargs } = require("../../utilities/findUserargs.js");
 const { findTier } = require("../../utilities/findRank.js");
-const { MCSR } = require("mcsr-api");
+const { ranked_api } = require("mcsr-ranked-api");
 
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
-	const api = new MCSR();
+	const api = new ranked_api();
 
 	let server = "minecraft";
 
