@@ -24,6 +24,10 @@ exports.run = async (client, message, args, prefix) => {
 			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("Please provide an index value")] });
 			return;
 		}
+		if (index <= 0) {
+			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("Please provide an index value grater than 0")] });
+			return;
+		}
 	}
 
 	let type_arguments = "";
