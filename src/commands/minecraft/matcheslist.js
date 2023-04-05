@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { FindUserargs } = require("../../utilities/findUserargs.js");
 const { MCSR } = require("mcsr-api");
-const { getMatch } = require("../../utilities/functions/getMatch.js");
+const { getMatchesList } = require("../../utilities/functions/getMatchesList.js");
 const fs = require("fs");
 
 exports.run = async (client, message, args, prefix) => {
@@ -9,7 +9,7 @@ exports.run = async (client, message, args, prefix) => {
 	const api = new MCSR();
 
 	let server = "minecraft";
-	let index = 0;
+	let page = 1;
 	let ENCRYPTED = false;
 
 	let userArgs = await FindUserargs(message, args, server, prefix);
@@ -18,10 +18,10 @@ exports.run = async (client, message, args, prefix) => {
 		return;
 	}
 
-	if (args.includes("-i")) {
-		index = Number(args[args.indexOf("-i") + 1]) - 1;
-		if (isNaN(index)) {
-			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("Please provide an index value")] });
+	if (args.includes("-p")) {
+		page = Number(args[args.indexOf("-p") + 1]);
+		if (isNaN(page)) {
+			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("Please provide a page value")] });
 			return;
 		}
 	}
@@ -37,7 +37,7 @@ exports.run = async (client, message, args, prefix) => {
 		type_arguments = 3;
 	}
 
-	const unallowed = ["-i", "-ranked", "-casual"];
+	const unallowed = ["-p", "-page", "-ranked", "-casual"];
 	fs.readFile("./user-data.json", async (error, data) => {
 		const user_data = JSON.parse(data);
 
@@ -57,13 +57,13 @@ exports.run = async (client, message, args, prefix) => {
 			return;
 		}
 
-		const embed = await getMatch(ranked_data[index], ENCRYPTED, userArgs);
+		const embed = await getMatchesList(ranked_data, ENCRYPTED, userArgs, page);
 
 		message.channel.send({ embeds: [embed] });
 	});
 };
-exports.name = "matches";
-exports.aliases = ["matches", "matchrecent", "recentmatch", "match", "rr"];
+exports.name = "matcheslist";
+exports.aliases = ["matcheslist", "matchrecentlist", "recentmatchlist", "matchlist", "rrlist", "ml", "rrl"];
 exports.description = [
 	'get a recent mcsr ranked match\n\n**Parameters**\n`username` username of the player you want to get the recent match of. Can be blank but you need to link your account by typing "{prefix}link {userame} server=minecraft"\n`-i (number)` replace (number) with whichever recent match you want, defaults to 1. 2 means 2nd recent match 3 means 3rd etc.\n`-casual` gets the latest casual match\n`-ranked` gets the latest ranked match\n[mcsr ranked website](https://mcsrranked.com/)\n[user profile website](https://disrespec.tech/elo/)',
 ];

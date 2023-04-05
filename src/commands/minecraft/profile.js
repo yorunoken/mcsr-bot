@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
-const { FindUserargs } = require("../../utils/findUserargs.js");
-const { findTier } = require("../../utils/findRank.js");
+const { FindUserargs } = require("../../utilities/findUserargs.js");
+const { findTier } = require("../../utilities/findRank.js");
 const { MCSR } = require("mcsr-api");
 
 exports.run = async (client, message, args, prefix) => {
