@@ -13,10 +13,6 @@ exports.run = async (client, message, args, prefix) => {
 	let ENCRYPTED = false;
 
 	let userArgs = await FindUserargs(message, args, server, prefix);
-	if (userArgs == undefined) {
-		message.channel.send({ embeds: [new EmbedBuilder().setDescription("Link your account")] });
-		return;
-	}
 
 	if (args.includes("-i")) {
 		index = Number(args[args.indexOf("-i") + 1]) - 1;

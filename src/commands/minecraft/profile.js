@@ -10,10 +10,7 @@ exports.run = async (client, message, args, prefix) => {
 	let server = "minecraft";
 
 	var userArgs = await FindUserargs(message, args, server, prefix);
-	if (userArgs == undefined) {
-		message.channel.send({ embeds: [new EmbedBuilder().setDescription("Link your account")] });
-		return;
-	}
+
 	if (userArgs.endsWith("!{ENCRYPTED}")) {
 		userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
 	}
