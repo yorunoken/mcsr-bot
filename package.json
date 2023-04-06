@@ -1,5 +1,5 @@
 {
-  "name": "mcsr-bot",
+  "name": "mcsr-dev",
   "version": "1.0.0",
   "description": "a simple mcsr bot.",
   "main": "src/index.js",
@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@vitalets/google-translate-api": "^9.1.0",
+    "canvas": "^2.11.2",
+    "chart.js": "^3.9.1",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "easy-table": "^1.2.0",

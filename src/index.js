@@ -61,6 +61,10 @@ const cooldowns = new Map();
 
 client.on("ready", async () => {
 	console.log(`bot on`);
+	console.log(`Servers list:`);
+	client.guilds.cache.forEach((guild) => {
+		console.log(`${guild.name}`);
+	});
 	client.user.setPresence({
 		activities: [{ name: `?help`, type: ActivityType.Playing }],
 		status: "online",
@@ -103,8 +107,6 @@ client.on("messageCreate", (message) => {
 				return;
 			}
 		}
-
-		console.log(message.content);
 
 		// execute the command
 		command.run(client, message, args, prefix, EmbedBuilder);
