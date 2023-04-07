@@ -26,24 +26,11 @@ exports.run = async (client, message, args, prefix) => {
 	}
 
 	var user_id = user.uuid;
-	// Read the JSON file
-	fs.readFile("./user-data.json", (error, data) => {
-		if (error) {
-			console.log(error);
-			return;
-		}
 
-		//update the user's saber! username in the JSON file
-		const userData = JSON.parse(data);
-		userData[message.author.id] = { ...userData[message.author.id], MinecraftUserID: `${user_id}!{ENCRYPTED}` };
-		fs.writeFile("./user-data.json", JSON.stringify(userData, null, 2), (error) => {
-			if (error) {
-				console.log(error);
-			} else {
-				message.reply(`Set Minecraft uuid to **${user_id}**`);
-			}
-		});
-	});
+	const userData = JSON.parse(await fs.promises.readFile("./user_seeds.json"));
+	userData[message.author.id] = { ...userData[message.author.id], MinecraftUserID: `${user_id}!{ENCRYPTED}` };
+	await fs.promises.writeFile("./user-data.json", JSON.stringify(userData, null, 2));
+	message.reply(`Set Minecraft uuid to **${user_id}**`);
 };
 exports.name = "link";
 exports.aliases = ["link"];

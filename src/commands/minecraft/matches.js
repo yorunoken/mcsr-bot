@@ -38,35 +38,33 @@ exports.run = async (client, message, args, prefix) => {
 	}
 
 	const unallowed = ["-i", "-ranked", "-casual"];
-	fs.readFile("./user-data.json", async (error, data) => {
-		const user_data = JSON.parse(data);
 
-		try {
-			if (unallowed.some((word) => args.join("").startsWith(word))) {
-				userArgs = user_data[message.author.id].MinecraftUserID;
-			}
-		} catch (err) {
-			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`link your account by typing "${prefix}link {userame}`)] });
-			return;
+	const user_data = JSON.parse(await fs.promises.readFile("./user_seeds.json"));
+	try {
+		if (unallowed.some((word) => args.join("").startsWith(word))) {
+			userArgs = user_data[message.author.id].MinecraftUserID;
 		}
+	} catch (err) {
+		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`link your account by typing "${prefix}link {userame}`)] });
+		return;
+	}
 
-		if (userArgs.endsWith("!{ENCRYPTED}")) {
-			userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
-			ENCRYPTED = true;
-		}
+	if (userArgs.endsWith("!{ENCRYPTED}")) {
+		userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
+		ENCRYPTED = true;
+	}
 
-		let ranked_data;
-		try {
-			ranked_data = await api.getRecentMatch(userArgs, { match_type: type_arguments });
-		} catch (err) {
-			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
-			return;
-		}
+	let ranked_data;
+	try {
+		ranked_data = await api.getRecentMatch(userArgs, { match_type: type_arguments });
+	} catch (err) {
+		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+		return;
+	}
 
-		const embed = await getMatch(ranked_data[index], ENCRYPTED, userArgs);
+	const embed = await getMatch(ranked_data[index], ENCRYPTED, userArgs);
 
-		message.channel.send({ embeds: [embed] });
-	});
+	message.channel.send({ embeds: [embed] });
 };
 exports.name = "matches";
 exports.aliases = ["matches", "matchrecent", "recentmatch", "match", "rr"];

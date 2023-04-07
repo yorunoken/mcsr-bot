@@ -37,37 +37,25 @@ function findTier(elo) {
 		}
 	}
 
-	let _tier = tier.toLowerCase();
-	switch (true) {
-		case _tier.includes("coal"):
-			emote = coal;
-			break;
-		case _tier.includes("iron"):
-			emote = iron;
-			break;
-		case _tier.includes("gold"):
-			emote = gold;
-			break;
-		case _tier.includes("diamond"):
-			emote = diamond;
-			break;
+	const emotes = {
+		coal: coal,
+		iron: iron,
+		gold: gold,
+		diamond: diamond,
+	};
+
+	function tierToEmote(tier) {
+		let _tier = tier.toLowerCase();
+		for (const [key, value] of Object.entries(emotes)) {
+			if (_tier.includes(key)) {
+				return value;
+			}
+		}
+		return null;
 	}
 
-	let _nextTier = nextTier.toLowerCase();
-	switch (true) {
-		case _nextTier.includes("coal"):
-			nextEmote = coal;
-			break;
-		case _nextTier.includes("iron"):
-			nextEmote = iron;
-			break;
-		case _nextTier.includes("gold"):
-			nextEmote = gold;
-			break;
-		case _nextTier.includes("diamond"):
-			nextEmote = diamond;
-			break;
-	}
+	const emote = tierToEmote(tier);
+	const nextEmote = tierToEmote(nextTier);
 	return { currElo: _elo, tier: tier, nextTier: nextTier, eloNeeded: eloNeeded, emote: emote, nextEmote: nextEmote };
 }
 

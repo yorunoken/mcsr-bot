@@ -1,5 +1,7 @@
 const fs = require("fs");
 const { EmbedBuilder } = require("discord.js");
+
+// SUPER old code so don't mind it lol
 async function FindUserargs(message, args, server, prefix) {
 	let userargs;
 	return new Promise((resolve, reject) => {

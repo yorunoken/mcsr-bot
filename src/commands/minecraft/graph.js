@@ -13,35 +13,33 @@ exports.run = async (client, message, args, prefix) => {
 
 	var userArgs = await FindUserargs(message, args, server, prefix);
 
-	fs.readFile("./user-data.json", async (error, data) => {
-		const user_data = JSON.parse(data);
+	const user_data = JSON.parse(await fs.promises.readFile("./user_seeds.json"));
 
-		try {
-			if (args[0] == undefined) {
-				userArgs = user_data[message.author.id].MinecraftUserID;
-			}
-		} catch (err) {
-			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`link your account by typing "${prefix}link {userame}`)] });
-			return;
+	try {
+		if (args[0] == undefined) {
+			userArgs = user_data[message.author.id].MinecraftUserID;
 		}
+	} catch (err) {
+		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`link your account by typing "${prefix}link {userame}`)] });
+		return;
+	}
 
-		if (userArgs.endsWith("!{ENCRYPTED}")) {
-			userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
-			ENCRYPTED = true;
-		}
+	if (userArgs.endsWith("!{ENCRYPTED}")) {
+		userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
+		ENCRYPTED = true;
+	}
 
-		let ranked_data, user;
-		try {
-			user = await api.getUserStats(userArgs);
-			ranked_data = await api.getRecentMatch(userArgs, { match_type: 2, count: 50 });
-		} catch (err) {
-			message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
-			return;
-		}
+	let ranked_data, user;
+	try {
+		user = await api.getUserStats(userArgs);
+		ranked_data = await api.getRecentMatch(userArgs, { match_type: 2, count: 50 });
+	} catch (err) {
+		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+		return;
+	}
 
-		const _function = await getGraph(user, ranked_data, ENCRYPTED, userArgs);
-		message.channel.send({ embeds: [_function.embed], files: [_function.attachment] });
-	});
+	const _function = await getGraph(user, ranked_data, ENCRYPTED, userArgs);
+	message.channel.send({ embeds: [_function.embed], files: [_function.attachment] });
 };
 exports.name = "graph";
 exports.aliases = ["graph", "elograph"];
