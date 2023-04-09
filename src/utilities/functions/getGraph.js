@@ -2,8 +2,8 @@ const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 const Chart = require("chart.js");
 const Canvas = require("canvas");
 
-async function getGraph(user, match_data, ENCRYPTED, userArgs) {
-	const elo_history = getEloHistory(user, match_data, ENCRYPTED, userArgs); // gets elo history (last 50 matches only), will make it so it gets more later
+async function getGraph(user, match_data) {
+	const elo_history = getEloHistory(user, match_data); // gets elo history (last 50 matches only), will make it so it gets more later
 
 	let _days = [];
 	for (let i = elo_history.length; i > 0; i--) {
@@ -127,7 +127,7 @@ async function getGraph(user, match_data, ENCRYPTED, userArgs) {
 	return { embed, attachment };
 }
 
-function getEloHistory(user, data, ENCRYPTED, userArgs) {
+function getEloHistory(user, data) {
 	let elo_history = [];
 	for (let i = data.length - 1; i >= 0; i--) {
 		let match = data[i];

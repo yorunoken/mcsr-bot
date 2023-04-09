@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const { FindUserargs } = require("../../utilities/findUserargs.js");
 const { findTier } = require("../../utilities/findRank.js");
 const { ranked_api } = require("mcsr-ranked-api");
+const { findID } = require("../../utilities/findDiscordID.js");
 
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
@@ -81,6 +82,10 @@ exports.run = async (client, message, args, prefix) => {
 	}
 	const winrate = (combined_records.win / (combined_records.win + combined_records.draw + combined_records.lose)) * 100;
 
+	let sixth_row = "";
+	const discordID = await findID(`${data.uuid}!{ENCRYPTED}`);
+	sixth_row = discordID ? `\n**Linked discord:** <@${discordID}>` : "";
+
 	const ranked_stats = `**Ranked**\n**wins:** \`${data.records[2].win}\` **losses:** \`${data.records[2].lose}\` **draws:** \`${data.records[2].draw}\``;
 	const casual_stats = `**Casual**\n**wins:** \`${data.records[1].win}\` **losses:** \`${data.records[1].lose}\` **draws:** \`${data.records[1].draw}\``;
 
@@ -99,7 +104,7 @@ exports.run = async (client, message, args, prefix) => {
 		.setFields(
 			{
 				name: "Statistics :bar_chart:",
-				value: `${first_row}${second_row}${third_row}${fourth_row}${fifth_row}`,
+				value: `${first_row}${second_row}${third_row}${fourth_row}${fifth_row}${sixth_row}`,
 				inline: false,
 			},
 			{

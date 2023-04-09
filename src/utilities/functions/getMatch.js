@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+const { findID } = require("../findDiscordID");
 
 async function getMatch(match, ENCRYPTED, userArgs) {
 	if (match == undefined) {
@@ -61,10 +62,12 @@ async function getMatch(match, ENCRYPTED, userArgs) {
 
 	const user_avatar_url = `https://crafatar.com/avatars/${match.members[0].uuid}.png?overlay`;
 	const user_username = match.members[0].nickname;
+	const user_uuid = match.members[0].uuid;
 	const user_curr_elo = match.members[0].elo_rate;
 	const user_curr_rank = match.members[0].elo_rank;
 
 	const opponent_username = match.members[1].nickname;
+	const opponent_uuid = match.members[1].uuid;
 	const opponent_curr_elo = match.members[1].elo_rate;
 	const opponent_curr_rank = match.members[1].elo_rank;
 
@@ -105,8 +108,8 @@ async function getMatch(match, ENCRYPTED, userArgs) {
 		user_elo_change = `**Elo change:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no elo change because the match type isn't ranked")\n**Prev. elo:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was previos elo because the match isn't ranked")\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
 		opponent_elo_change = `**Elo change:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was no elo change because the match type isn't ranked")\n**Prev. elo:** [\`<?>\`](https://mcsrranked.com "the question mark here indicates that there was previos elo because the match isn't ranked")\n[User profile](https://disrespec.tech/elo/?username=${opponent_username})`;
 	} else {
-		user_elo_change = `**Elo change:** \`${match.score_changes[0].change}\`\n**Prev. elo:** \`${match.score_changes[0].score}\`\n[User profile](https://disrespec.tech/elo/?username=${user_username})`;
-		opponent_elo_change = `**Elo change:** \`${match.score_changes[1].change}\`\n**Prev. elo:** \`${match.score_changes[1].score}\`\n[User profile](https://disrespec.tech/elo/?username=${opponent_username})`;
+		user_elo_change = `**Elo change:** \`${match.score_changes[0].change}\`\n**Prev. elo:** \`${match.score_changes[0].score}\``;
+		opponent_elo_change = `**Elo change:** \`${match.score_changes[1].change}\`\n**Prev. elo:** \`${match.score_changes[1].score}\``;
 	}
 
 	let match_type;
@@ -122,6 +125,12 @@ async function getMatch(match, ENCRYPTED, userArgs) {
 			break;
 	}
 
+	const user_discord = await findID(`${user_uuid}!{ENCRYPTED}`);
+	const user_ID = user_discord ? `\n**Linked discord:** <@${user_discord}>` : "";
+
+	const opponent_discord = await findID(`${opponent_uuid}!{ENCRYPTED}`);
+	const opponent_ID = opponent_discord ? `\n**Linked discord:** <@${opponent_discord}>` : "";
+
 	const embed = new EmbedBuilder()
 		.setColor("Purple")
 		.setAuthor({
@@ -132,12 +141,12 @@ async function getMatch(match, ENCRYPTED, userArgs) {
 		.setFields(
 			{
 				name: `${user_username} - ${user_curr_elo}elo (#${user_curr_rank})`,
-				value: user_elo_change,
+				value: `${user_elo_change}${user_ID}\n[User profile](https://disrespec.tech/elo/?username=${user_username})`,
 				inline: true,
 			},
 			{
 				name: `${opponent_username} - ${opponent_curr_elo}elo (#${opponent_curr_rank})`,
-				value: opponent_elo_change,
+				value: `${opponent_elo_change}${opponent_ID}\n[User profile](https://disrespec.tech/elo/?username=${opponent_username})`,
 				inline: true,
 			},
 		)

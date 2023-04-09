@@ -7,13 +7,12 @@ const { EmbedBuilder } = require("discord.js");
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
 	const api = new ranked_api();
-	let ENCRYPTED = false;
 
 	let server = "minecraft";
 
 	var userArgs = await FindUserargs(message, args, server, prefix);
 
-	const user_data = JSON.parse(await fs.promises.readFile("./user_seeds.json"));
+	const user_data = JSON.parse(await fs.promises.readFile("./user-data.json"));
 
 	try {
 		if (args[0] == undefined) {
@@ -22,11 +21,6 @@ exports.run = async (client, message, args, prefix) => {
 	} catch (err) {
 		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`link your account by typing "${prefix}link {userame}`)] });
 		return;
-	}
-
-	if (userArgs.endsWith("!{ENCRYPTED}")) {
-		userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
-		ENCRYPTED = true;
 	}
 
 	let ranked_data, user;
@@ -38,7 +32,7 @@ exports.run = async (client, message, args, prefix) => {
 		return;
 	}
 
-	const _function = await getGraph(user, ranked_data, ENCRYPTED, userArgs);
+	const _function = await getGraph(user, ranked_data);
 	message.channel.send({ embeds: [_function.embed], files: [_function.attachment] });
 };
 exports.name = "graph";

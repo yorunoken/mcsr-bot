@@ -39,7 +39,7 @@ exports.run = async (client, message, args, prefix) => {
 
 	const unallowed = ["-p", "-page", "-ranked", "-casual"];
 
-	const user_data = JSON.parse(await fs.promises.readFile("./user_seeds.json"));
+	const user_data = JSON.parse(await fs.promises.readFile("./user-data.json"));
 	try {
 		if (unallowed.some((word) => args.join("").startsWith(word))) {
 			userArgs = user_data[message.author.id].MinecraftUserID;
