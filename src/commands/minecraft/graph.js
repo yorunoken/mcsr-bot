@@ -23,6 +23,10 @@ exports.run = async (client, message, args, prefix) => {
 		return;
 	}
 
+	if (userArgs.endsWith("!{ENCRYPTED}")) {
+		userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
+	}
+
 	let ranked_data, user;
 	try {
 		user = await api.getUserStats(userArgs);
