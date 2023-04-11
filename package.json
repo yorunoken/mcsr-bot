@@ -17,9 +17,9 @@
     "dotenv": "^16.0.3",
     "easy-table": "^1.2.0",
     "fs": "^0.0.1-security",
-    "mcsr-ranked-api": "^1.2.1"
+    "mongodb": "^5.2.0"
   },
   "devDependencies": {
-    "mcsr-ranked-api": "^1.2.1"
+    "mcsr-ranked-api": "^1.2.3"
   }
 }

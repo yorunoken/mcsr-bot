@@ -8,13 +8,9 @@ exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
 	const api = new ranked_api();
 
-	let server = "minecraft";
+	var userArgs = await FindUserargs(message, args, prefix);
 
-	var userArgs = await FindUserargs(message, args, server, prefix);
-
-	if (userArgs.endsWith("!{ENCRYPTED}")) {
-		userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
-	}
+	userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
 
 	/**
 	const mojang_base_URL = "https://api.mojang.com/users";

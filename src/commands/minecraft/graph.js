@@ -8,14 +8,11 @@ exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
 	const api = new ranked_api();
 
-	let server = "minecraft";
-
-	var userArgs = await FindUserargs(message, args, server, prefix);
-
-	const user_data = JSON.parse(await fs.promises.readFile("./user-data.json"));
+	var userArgs = await FindUserargs(message, args, prefix);
 
 	try {
 		if (args[0] == undefined) {
+			const user_data = JSON.parse(await fs.promises.readFile("./user-data.json"));
 			userArgs = user_data[message.author.id].MinecraftUserID;
 		}
 	} catch (err) {
@@ -23,9 +20,7 @@ exports.run = async (client, message, args, prefix) => {
 		return;
 	}
 
-	if (userArgs.endsWith("!{ENCRYPTED}")) {
-		userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
-	}
+	userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
 
 	let ranked_data, user;
 	try {

@@ -1,10 +1,11 @@
 const { EmbedBuilder } = require("discord.js");
 const { findID } = require("../findDiscordID");
 
-async function getMatch(match, ENCRYPTED, userArgs) {
+async function getMatch(match, ENCRYPTED, userArgs, index) {
 	if (match == undefined) {
 		return new EmbedBuilder().setColor("Purple").setDescription("No recent matches with the filters found.");
 	}
+	let _index = index + 1;
 
 	/**
     this switch function takes the array, and rearranges them so the first user is the user typed the command
@@ -78,7 +79,6 @@ async function getMatch(match, ENCRYPTED, userArgs) {
 	let seconds = (total_seconds % 60).toFixed().toString().padStart(2, "0");
 	const match_duration = `${minutes}:${seconds}`;
 
-	const match_seed = match.match_seed;
 	const match_date = new Date(match.match_date).getTime();
 
 	let match_status;
@@ -131,22 +131,41 @@ async function getMatch(match, ENCRYPTED, userArgs) {
 	const opponent_discord = await findID(`${opponent_uuid}!{ENCRYPTED}`);
 	const opponent_ID = opponent_discord ? `\n**Linked discord:** <@${opponent_discord}>` : "";
 
+	function addNumSuffix(num) {
+		const suffixes = {
+			1: "st",
+			2: "nd",
+			3: "rd",
+			11: "th",
+			12: "th",
+			13: "th",
+		};
+		const lastTwoDigits = num % 100;
+		const lastDigit = num % 10;
+		const suffix = suffixes[lastTwoDigits] || suffixes[lastDigit] || "th";
+		return num + suffix;
+	}
+
 	const embed = new EmbedBuilder()
 		.setColor("Purple")
 		.setAuthor({
-			name: `Seed: ${match_seed}`,
-			url: `https://mcseeder.com/?seed=${match_seed}&version=16`,
+			name: `${user_username}'s ${addNumSuffix(_index)} latest match`,
 		})
 		.setDescription(`**Match type: ${match_type}**\n**Match status: ${match_status}**\n**Match duration:** \`${match_duration}\`${forfeit}\n**Match date:** <t:${match_date}:R>`)
 		.setFields(
 			{
-				name: `${user_username} - ${user_curr_elo}elo (#${user_curr_rank})`,
-				value: `${user_elo_change}${user_ID}\n[User profile](https://disrespec.tech/elo/?username=${user_username})`,
+				name: "User",
+				value: `**[${user_username}](https://disrespec.tech/elo/?username=${user_username}) - ${user_curr_elo}elo (#${user_curr_rank})**\n${user_elo_change}${user_ID}`,
 				inline: true,
 			},
 			{
-				name: `${opponent_username} - ${opponent_curr_elo}elo (#${opponent_curr_rank})`,
-				value: `${opponent_elo_change}${opponent_ID}\n[User profile](https://disrespec.tech/elo/?username=${opponent_username})`,
+				name: "\u200b",
+				value: "\u200b<:versus:1092979181215817749>",
+				inline: true,
+			},
+			{
+				name: "Opponent",
+				value: `**[${opponent_username}](https://disrespec.tech/elo/?username=${opponent_username}) - ${opponent_curr_elo}elo (#${opponent_curr_rank})**\n${opponent_elo_change}${opponent_ID}`,
 				inline: true,
 			},
 		)

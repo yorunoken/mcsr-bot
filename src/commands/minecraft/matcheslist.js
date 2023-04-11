@@ -8,11 +8,10 @@ exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
 	const api = new ranked_api();
 
-	let server = "minecraft";
 	let page = 1;
 	let ENCRYPTED = false;
 
-	let userArgs = await FindUserargs(message, args, server, prefix);
+	let userArgs = await FindUserargs(message, args, prefix);
 
 	if (args.includes("-p")) {
 		page = Number(args[args.indexOf("-p") + 1]);
@@ -26,7 +25,7 @@ exports.run = async (client, message, args, prefix) => {
 		}
 	}
 
-	let type_arguments = "";
+	let type_arguments;
 	if (args.includes("-casual")) {
 		type_arguments = 1;
 	}

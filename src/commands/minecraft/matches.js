@@ -7,12 +7,10 @@ const fs = require("fs");
 exports.run = async (client, message, args, prefix) => {
 	await message.channel.sendTyping();
 	const api = new ranked_api();
-
-	let server = "minecraft";
 	let index = 0;
 	let ENCRYPTED = false;
 
-	let userArgs = await FindUserargs(message, args, server, prefix);
+	let userArgs = await FindUserargs(message, args, prefix);
 
 	if (args.includes("-i")) {
 		index = Number(args[args.indexOf("-i") + 1]) - 1;
@@ -26,7 +24,7 @@ exports.run = async (client, message, args, prefix) => {
 		}
 	}
 
-	let type_arguments = "";
+	let type_arguments;
 	if (args.includes("-casual")) {
 		type_arguments = 1;
 	}
@@ -62,12 +60,12 @@ exports.run = async (client, message, args, prefix) => {
 		return;
 	}
 
-	const embed = await getMatch(ranked_data[index], ENCRYPTED, userArgs);
+	const embed = await getMatch(ranked_data[index], ENCRYPTED, userArgs, index);
 
 	message.channel.send({ embeds: [embed] });
 };
 exports.name = "matches";
-exports.aliases = ["matches", "matchrecent", "recentmatch", "match", "rr"];
+exports.aliases = ["matches", "matchrecent", "recentmatch", "match", "rr", "m"];
 exports.description = [
 	'get a recent mcsr ranked match\n\n**Parameters**\n`username` username of the player you want to get the recent match of. Can be blank but you need to link your account by typing "{prefix}link {userame} server=minecraft"\n`-i (number)` replace (number) with whichever recent match you want, defaults to 1. 2 means 2nd recent match 3 means 3rd etc.\n`-casual` gets the latest casual match\n`-ranked` gets the latest ranked match\n[mcsr ranked website](https://mcsrranked.com/)\n[user profile website](https://disrespec.tech/elo/)',
 ];

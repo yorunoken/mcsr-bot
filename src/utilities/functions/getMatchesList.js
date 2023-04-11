@@ -99,7 +99,6 @@ function getMatchData(match, index, ENCRYPTED, userArgs) {
 	let seconds = (total_seconds % 60).toFixed().toString().padStart(2, "0");
 	const match_duration = `${minutes}:${seconds}`;
 
-	const match_seed = match.match_seed;
 	const match_date = new Date(match.match_date).getTime();
 
 	let forfeit = "";
@@ -136,7 +135,7 @@ function getMatchData(match, index, ENCRYPTED, userArgs) {
 			break;
 	}
 
-	const row1 = `**${index}.** \`${match_seed}\` - [${match_type}]\n`;
+	const row1 = `**${index}.** [${match_type}]\n`;
 	const row2 = `**${user_username}** (**${user_curr_elo}**elo #**${user_curr_rank}**) ${versus} **${opponent_username}** (**${opponent_curr_elo}**elo #**${opponent_curr_rank}**)\n`;
 	const row3 = `${match_status} - Lasted \`${match_duration}\` [<t:${match_date}:R>]`;
 
