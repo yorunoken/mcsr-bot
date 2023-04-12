@@ -20,6 +20,6 @@
     "mongodb": "^5.2.0"
   },
   "devDependencies": {
-    "mcsr-ranked-api": "^1.2.3"
+    "mcsr-ranked-api": "^1.2.4"
   }
 }
