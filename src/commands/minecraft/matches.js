@@ -43,7 +43,6 @@ exports.run = async (client, message, args, prefix) => {
 			userArgs = user_data[message.author.id].MinecraftUserID;
 		}
 	} catch (err) {
-		message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`link your account by typing "${prefix}link {userame}`)] });
 		return;
 	}
 
