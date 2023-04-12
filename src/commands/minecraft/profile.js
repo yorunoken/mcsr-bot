@@ -78,42 +78,58 @@ exports.run = async (client, message, args, prefix) => {
 	}
 	const winrate = (combined_records.win / (combined_records.win + combined_records.draw + combined_records.lose)) * 100;
 
-	let sixth_row = "";
-	const discordID = await findID(`${data.uuid}!{ENCRYPTED}`);
-	sixth_row = discordID ? `\n**Linked discord:** <@${discordID}>` : "";
+	const discord_ID = await findID(`${data.uuid}!{ENCRYPTED}`);
+	const discord_row = discord_ID ? `<:discord:1095835124018458634> **Discord:** <@${discord_ID}>` : "<:discord:1095835124018458634> **Discord:** **Not linked**";
 
-	const ranked_stats = `**Ranked**\n**wins:** \`${data.records[2].win}\` **losses:** \`${data.records[2].lose}\` **draws:** \`${data.records[2].draw}\``;
-	const casual_stats = `**Casual**\n**wins:** \`${data.records[1].win}\` **losses:** \`${data.records[1].lose}\` **draws:** \`${data.records[1].draw}\``;
+	const youtube_ID = data.connections.youtube;
+	const youtube_row = youtube_ID
+		? `<:youtube:1095835069031141416> **Youtube:** [**${data.connections.youtube.name}**](https://www.youtube.com/channel/${data.connections.youtube.id})`
+		: "<:youtube:1095835069031141416> **Youtube:** **Not linked**";
+
+	const twitch_ID = data.connections.twitch;
+	const twitch_row = twitch_ID
+		? `<:twitch:1095835065356910662> **Twitch:** [**${data.connections.twitch.name}**](https://www.twitch.tv/${data.connections.twitch.name})`
+		: "<:twitch:1095835065356910662> **Twitch:** **Not linked**";
+
+	const ranked_stats = `**Ranked**\n\`${data.records[2].win}\`/\`${data.records[2].lose}\`/\`${data.records[2].draw}\``;
+	const casual_stats = `**Casual**\n\`${data.records[1].win}\`/\`${data.records[1].lose}\`/\`${data.records[1].draw}\``;
 
 	const first_row = `**Personal best time:** \`${pb_time}\` • **Winrate:** \`${winrate.toFixed(2)}%\`\n`;
 	const second_row = `**Highest winstreak:** \`${highest_streak}\` • **Current winstreak:** \`${curr_streak}\`\n`;
 	const third_row = `**Best elo:** \`${elo_best}\` • **Elo last season:** \`${elo_last_season}\`\n`;
 	const fourth_row = `**Total plays:** \`${total_plays}\` • **This season:** \`${season_plays}\`\n`;
 	const fifth_row = `**Last played:** <t:${last_played_time}:R>`;
+
+	let fields = [
+		{
+			name: ":bar_chart: User Statistics",
+			value: `${first_row}${second_row}${third_row}${fourth_row}${fifth_row}`,
+			inline: false,
+		},
+		{
+			name: ":construction_site: Tiers",
+			value: `**Current tier:**\n\`${curr_tier}\`${curr_emote}\n**Next tier:**\n\`${next_tier}\`${next_emote} **(in ${elo_needed} elo)**`,
+			inline: true,
+		},
+		{
+			name: ":video_game: S1 Stats",
+			value: `${ranked_stats}\n${casual_stats}`,
+			inline: true,
+		},
+		{
+			name: ":loudspeaker: Socials",
+			value: `${discord_row}\n${youtube_row}\n${twitch_row}`,
+			inline: false,
+		},
+	];
 	const embed = new EmbedBuilder()
 		.setColor("Purple")
 		.setAuthor({
-			name: `${username} - ${curr_elo}elo (#${curr_rank})`,
+			name: `${username} - ${curr_elo} elo (#${curr_rank})`,
 			url: `https://disrespec.tech/elo/?username=${username}`,
 		})
 		.setThumbnail(avatar_url)
-		.setFields(
-			{
-				name: "Statistics :bar_chart:",
-				value: `${first_row}${second_row}${third_row}${fourth_row}${fifth_row}${sixth_row}`,
-				inline: false,
-			},
-			{
-				name: "Tier",
-				value: `**Current tier:** \`${curr_tier}\` ${curr_emote}\n**Next tier:** \`${next_tier}\` ${next_emote}\n**Elo needed:** \`${elo_needed}\``,
-				inline: true,
-			},
-			{
-				name: "Season 1 <:homi:1083167118385745980>",
-				value: `${ranked_stats}\n${casual_stats}`,
-				inline: true,
-			},
-		)
+		.setFields(fields)
 		.setFooter({ text: `Stats from mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
 	message.channel.send({ embeds: [embed] });
 };

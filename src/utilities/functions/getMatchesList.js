@@ -136,7 +136,7 @@ function getMatchData(match, index, ENCRYPTED, userArgs) {
 	}
 
 	const row1 = `**${index}.** [${match_type}]\n`;
-	const row2 = `**${user_username}** (**${user_curr_elo}**elo #**${user_curr_rank}**) ${versus} **${opponent_username}** (**${opponent_curr_elo}**elo #**${opponent_curr_rank}**)\n`;
+	const row2 = `**${user_username}** (**${user_curr_elo}** elo #**${user_curr_rank}**) ${versus} **${opponent_username}** (**${opponent_curr_elo}** elo #**${opponent_curr_rank}**)\n`;
 	const row3 = `${match_status} - Lasted \`${match_duration}\` [<t:${match_date}:R>]`;
 
 	return `${row1}${row2}${row3}`;
