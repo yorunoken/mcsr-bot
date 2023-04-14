@@ -11,20 +11,15 @@ exports.run = async (client, message, args, prefix) => {
 
   var userArgs = await FindUserargs(message, args, prefix);
 
-  _userArgs = userArgs[0];
   if (!Array.isArray(userArgs)) {
-    _userArgs = _userArgs.replace(/!{ENCRYPTED}$/, "");
+    _userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
+  } else {
+    _userArgs = userArgs[0];
   }
-
-  /**
-	const mojang_base_URL = "https://api.mojang.com/users";
-	const mojang_response = await fetch(`${mojang_base_URL}/profiles/minecraft/${userArgs}`).then((res) => res.json());
-	const uuid = mojang_response.id; 
-    */
 
   let data;
   try {
-    data = await api.getUserStats(userArgs);
+    data = await api.getUserStats(_userArgs);
   } catch (err) {
     message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
