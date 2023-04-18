@@ -13,6 +13,7 @@
     "@vitalets/google-translate-api": "^9.1.0",
     "canvas": "^2.11.2",
     "chart.js": "^3.9.1",
+    "cli-table": "^0.3.11",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "easy-table": "^1.2.0",
@@ -20,6 +21,6 @@
     "mongodb": "^5.2.0"
   },
   "devDependencies": {
-    "mcsr-ranked-api": "^1.2.4"
+    "mcsr-ranked-api": "^1.3.2"
   }
 }

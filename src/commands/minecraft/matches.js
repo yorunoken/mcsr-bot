@@ -66,7 +66,6 @@ exports.run = async (client, message, args, prefix) => {
   }
 
   let ranked_data;
-  console.log(userArgs, _userArgs);
   try {
     ranked_data = await api.getRecentMatch(_userArgs, { match_type: type_arguments, opponent: opponent });
   } catch (err) {

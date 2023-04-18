@@ -62,11 +62,14 @@ async function getMatch(match, ENCRYPTED, userArgs, index) {
       break;
   }
 
+  console.log(match);
+
   const user_avatar_url = `https://crafatar.com/avatars/${match.members[0].uuid}.png?overlay`;
   const user_username = match.members[0].nickname;
   const user_uuid = match.members[0].uuid;
   const user_curr_elo = match.members[0].elo_rate;
   const user_curr_rank = match.members[0].elo_rank;
+  const match_id = match.match_id;
 
   const opponent_username = match.members[1].nickname;
   const opponent_uuid = match.members[1].uuid;
@@ -149,8 +152,9 @@ async function getMatch(match, ENCRYPTED, userArgs, index) {
 
   const embed = new EmbedBuilder()
     .setColor("Purple")
+    .setTitle(`Match ID: ${match_id}`)
     .setAuthor({
-      name: `${user_username}'s ${addNumSuffix(_index)} latest match`,
+      name: `${addNumSuffix(_index)} latest match`,
     })
     .setDescription(`**Match type: ${match_type}**\n**Match status: ${match_status}**\n**Match duration:** \`${match_duration}\`${forfeit}\n**Match date:** <t:${match_date}:R>`)
     .setFields(
