@@ -102,7 +102,7 @@ function getTable(user, opponent, userTimes, opponentTimes) {
   t.cell("Opponent", opponent);
   t.newRow();
 
-  const maxLength = Math.max(userTimes.length, opponentTimes.length);
+  const maxLength = Math.max(userTimes.length, opponentTimes.length, events.length);
 
   for (let i = 0; i < maxLength; i++) {
     const userTime = userTimes[i] || "";
