@@ -59,9 +59,18 @@ exports.run = async (client, message, args, prefix) => {
       return;
     }
 
+    let tryCount = 0;
+
     do {
-      if (!embedMessages[EmbedValue].embeds[0]) break;
-      matchID = EmbedFetch(embedMessages[EmbedValue].embeds);
+      try {
+        if (tryCount > 100) {
+          message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("No match embeds found in the last 100 messages.")] });
+          return;
+        }
+        tryCount++;
+        if (!embedMessages[EmbedValue].embeds[0]) break;
+        matchID = EmbedFetch(embedMessages[EmbedValue].embeds);
+      } catch (e) {}
     } while (!GoodToGo);
 
     const match = await api.getMatchStats(matchID);
