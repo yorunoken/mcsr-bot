@@ -44,6 +44,24 @@ exports.run = async (client, message, args, prefix) => {
     return;
   }
 
+  if (args[0]) {
+    const matchID = args[0];
+    if (isNaN(matchID)) {
+      message.reply("Please provide a valid match ID");
+      return;
+    }
+    let match;
+    try {
+      match = await api.getMatchStats(matchID);
+    } catch (err) {
+      message.reply("Please provide a valid match ID");
+      return;
+    }
+    const _embed = await getMatchStats(match);
+    message.channel.send({ embeds: [_embed] });
+    return;
+  }
+
   const channel = client.channels.cache.get(message.channel.id);
   channel.messages.fetch({ limit: 100 }).then(async (messages) => {
     let embedMessages = [];
@@ -85,11 +103,3 @@ exports.description = [
 ];
 exports.usage = [`profile yorunoken\nmcsr feinberg`];
 exports.category = ["minecraft"];
-
-async function EmbedFetch(embed) {
-  const beatmapId = args[0].match(/\d+/)[0];
-  // if args doesn't start with https: try to get the beatmap id by number provided
-  if (!args[0].startsWith("https:")) {
-    beatmapId = args[0];
-  }
-}
