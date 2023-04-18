@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, time } = require("discord.js");
 const Table = require("easy-table");
 
 async function getMatchStats(match) {
@@ -26,7 +26,7 @@ async function getMatchStats(match) {
   let seed_type = match.seed_type;
   seed_type = seed_type.replace("_", " ");
 
-  const table = getTable(user_username, opponent_username, userTimes, opponentTimes);
+  const table = getTable(user_username, opponent_username, userTimes, opponentTimes, timelines.uR, timelines.oR);
 
   const embed = new EmbedBuilder()
     .setColor("Purple")
@@ -43,7 +43,9 @@ async function getMatchStats(match) {
 
 function getTimelines(match, user_uuid, opponent_uuid) {
   const timelineRaw = match.timelines
-    .filter((timeline) => ["story.enter_the_end", "end.kill_dragon", "story.follow_ender_eye", "projectelo.timeline.blind_travel", "nether.find_fortress", "nether.find_bastion", "story.enter_the_nether"].includes(timeline.timeline))
+    .filter((timeline) =>
+      ["story.enter_the_end", "end.kill_dragon", "story.follow_ender_eye", "projectelo.timeline.reset", "projectelo.timeline.blind_travel", "nether.find_fortress", "nether.find_bastion", "story.enter_the_nether"].includes(timeline.timeline)
+    )
     .reverse();
 
   timelineRaw.sort((a, b) => {
@@ -73,6 +75,20 @@ function getTimelines(match, user_uuid, opponent_uuid) {
   const userTimeline = timelinesArray.find((tl) => tl.uuid === user_uuid);
   const opponentTimeline = timelinesArray.find((tl) => tl.uuid === opponent_uuid);
 
+  let uR = false;
+  let oR = false;
+  const userResetIndex = userTimeline.timelines.findIndex((timeline) => timeline.timeline === "projectelo.timeline.reset");
+  if (userResetIndex !== -1) {
+    uR = true;
+    userTimeline.timelines.splice(0, userResetIndex + 1);
+  }
+
+  const opponentResetIndex = opponentTimeline.timelines.findIndex((timeline) => timeline.timeline === "projectelo.timeline.reset");
+  if (opponentResetIndex !== -1) {
+    oR = true;
+    opponentTimeline.timelines.splice(0, opponentResetIndex + 1);
+  }
+
   const userTimes = userTimeline
     ? userTimeline.timelines.map((tl) => {
         const timeInMs = tl.time;
@@ -89,10 +105,10 @@ function getTimelines(match, user_uuid, opponent_uuid) {
         return `${minutes}:${seconds.padStart(2, "0")}`;
       })
     : [];
-  return { opponentTimes, userTimes };
+  return { opponentTimes, userTimes, uR, oR };
 }
 
-function getTable(user, opponent, userTimes, opponentTimes) {
+function getTable(user, opponent, userTimes, opponentTimes, uR, oR) {
   const t = new Table();
 
   const events = ["Entered the Nether", "Entered the Bastion", "Entered the Fortress", "First Blind", "Entered the Stronghold", "Entered the End", "Killed the Dragon"];
@@ -105,8 +121,17 @@ function getTable(user, opponent, userTimes, opponentTimes) {
   const maxLength = Math.max(userTimes.length, opponentTimes.length, events.length);
 
   for (let i = 0; i < maxLength; i++) {
-    const userTime = userTimes[i] || "";
-    const opponentTime = opponentTimes[i] || "";
+    uI = userTimes[i];
+    if (uR) {
+      uI = userTimes[i] ? `${userTimes[i]} (reset)` : "";
+    }
+
+    oI = opponentTimes[i];
+    if (oR) {
+      oI = opponentTimes[i] ? `${opponentTimes[i]} (reset)` : "";
+    }
+    const userTime = uI || "";
+    const opponentTime = oI || "";
     t.cell("User", userTime);
     t.cell("Events", events[i]);
     t.cell("Opponent", opponentTime);
