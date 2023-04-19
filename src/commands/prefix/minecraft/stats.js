@@ -1,9 +1,10 @@
 const { EmbedBuilder } = require("discord.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { getMatchStats } = require("../../utilities/functions/getMatchStats");
+const { getMatchStats } = require("../../../utilities/functions/getMatchStats");
 
-exports.run = async (client, message, args, prefix) => {
+async function run(client, message, args, prefix) {
   await message.channel.sendTyping();
+
   const api = new ranked_api();
   let GoodToGo = false;
   let EmbedValue = 0;
@@ -95,11 +96,13 @@ exports.run = async (client, message, args, prefix) => {
     const _embed = await getMatchStats(match);
     message.channel.send({ embeds: [_embed] });
   });
+}
+
+module.exports = {
+  name: "stats",
+  aliases: ["matchstats", "stats"],
+  cooldown: 5000,
+  run: async (client, message, args, prefix) => {
+    await run(client, message, args, prefix);
+  },
 };
-exports.name = "stats";
-exports.aliases = ["matchstats", "stats"];
-exports.description = [
-  "get match statistics by embed, the command gets the latest match embed and returns its statistics. You can choose which match to get the statistics of by replying to the embed\n\n**Parameters**\n`match_id` (optional) get match statistics by match id[mcsr ranked website](https://mcsrranked.com/)",
-];
-exports.usage = [`profile yorunoken\nmcsr feinberg`];
-exports.category = ["minecraft"];

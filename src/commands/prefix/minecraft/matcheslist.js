@@ -1,11 +1,12 @@
 const { EmbedBuilder } = require("discord.js");
-const { FindUserargs } = require("../../utilities/findUserargs.js");
+const { FindUserargs } = require("../../../utilities/findUserargs.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { getMatchesList } = require("../../utilities/functions/getMatchesList.js");
+const { getMatchesList } = require("../../../utilities/functions/getMatchesList.js");
 const fs = require("fs");
 
-exports.run = async (client, message, args, prefix) => {
+async function run(client, message, args, prefix) {
   await message.channel.sendTyping();
+
   const api = new ranked_api();
   let page = 1;
   let ENCRYPTED = false;
@@ -50,7 +51,7 @@ exports.run = async (client, message, args, prefix) => {
   }
 
   const unallowed = ["-p", "-page", "-ranked", "-casual"];
-  const user_data = JSON.parse(await fs.promises.readFile("./user-data.json"));
+  const user_data = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
   try {
     if (unallowed.some((word) => args.join("").startsWith(word))) {
       _userArgs = user_data[message.author.id].MinecraftUserID;
@@ -76,11 +77,13 @@ exports.run = async (client, message, args, prefix) => {
   const embed = await getMatchesList(ranked_data, ENCRYPTED, _userArgs, page);
 
   message.channel.send({ embeds: [embed] });
+}
+
+module.exports = {
+  name: "matcheslist",
+  aliases: ["matcheslist", "matchrecentlist", "recentmatchlist", "matchlist", "rrlist", "ml", "rrl"],
+  cooldown: 5000,
+  run: async (client, message, args, prefix) => {
+    await run(client, message, args, prefix);
+  },
 };
-exports.name = "matcheslist";
-exports.aliases = ["matcheslist", "matchrecentlist", "recentmatchlist", "matchlist", "rrlist", "ml", "rrl"];
-exports.description = [
-  'get a list of recent mcsr ranked matches\n\n**Parameters**\n`username` username of the player you want to get the recent match of. Can be blank but you need to link your account by typing "{prefix}link {userame}\n`-p (number)` replace (number) with your desired page you want, defaults to 1. 2 means 2nd list match 3 means 3rd etc.\n`-casual` gets the list of latest casual match\n`-ranked` gets the list of latest ranked match\n[mcsr ranked website](https://mcsrranked.com/)\n[user profile website](https://disrespec.tech/elo/)',
-];
-exports.usage = [`matches yorunoken\nranked feinberg -i 4\nranked specnr -casual -i 1`];
-exports.category = ["minecraft"];

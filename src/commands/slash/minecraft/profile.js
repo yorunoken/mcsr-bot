@@ -1,27 +1,18 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
-const { FindUserargs } = require("../../utilities/findUserargs.js");
-const { findTier } = require("../../utilities/findRank.js");
+const { findTier } = require("../../../utilities/findRank.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { findID } = require("../../utilities/findDiscordID.js");
+const { findID } = require("../../../utilities/findDiscordID.js");
+const fs = require("fs");
 
-exports.run = async (client, message, args, prefix) => {
-  await message.channel.sendTyping();
+async function run(interaction, user) {
   const api = new ranked_api();
-  let _userArgs;
-
-  var userArgs = await FindUserargs(message, args, prefix);
-
-  if (!Array.isArray(userArgs)) {
-    _userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
-  } else {
-    _userArgs = userArgs[0];
-  }
 
   let data;
   try {
-    data = await api.getUserStats(_userArgs);
+    data = await api.getUserStats(user);
   } catch (err) {
-    message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    interaction.reply({ ephemeral: true, embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
@@ -126,10 +117,26 @@ exports.run = async (client, message, args, prefix) => {
     .setThumbnail(avatar_url)
     .setFields(fields)
     .setFooter({ text: `Stats from mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
-  message.channel.send({ embeds: [embed] });
+  interaction.reply({ embeds: [embed] });
+}
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("profile")
+    .setDescription("Get a user's mcsr ranked profile and stats")
+    .addStringOption((option) => option.setName("username").setDescription("get a profile by username").setRequired(false)),
+  run: async (client, interaction) => {
+    let username = interaction.options.getString("username");
+    if (!username) {
+      const userData = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
+      try {
+        username = userData[interaction.user.id].MinecraftUserID;
+      } catch (err) {
+        interaction.reply({ ephmeral: true, content: "Set your minecraft username using /link" });
+      }
+      username = username.replace(/!{ENCRYPTED}$/, "");
+    }
+
+    await run(interaction, username);
+  },
 };
-exports.name = "profile";
-exports.aliases = ["profile", "mcsr", "mc", "minecraft"];
-exports.description = ["get mcsr ranked user statistics\n[mcsr ranked website](https://mcsrranked.com/)\n[user profile website](https://disrespec.tech/elo/)"];
-exports.usage = [`profile yorunoken\nmcsr feinberg`];
-exports.category = ["minecraft"];

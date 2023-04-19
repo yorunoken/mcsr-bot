@@ -5,7 +5,7 @@ const { EmbedBuilder } = require("discord.js");
 async function FindUserargs(message, args, prefix) {
   let userargs;
   let inputString = args.join(" ");
-  const userData = JSON.parse(await fs.promises.readFile("./user-data.json"));
+  const userData = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
   if (message.mentions.users.size > 0) {
     try {
       let mentionedUser;

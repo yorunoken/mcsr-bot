@@ -1,4 +1,4 @@
-const { EmbedBuilder, time } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const Table = require("easy-table");
 
 async function getMatchStats(match) {
@@ -72,8 +72,26 @@ function getTimelines(match, user_uuid, opponent_uuid) {
   });
   const timelinesArray = Object.values(timelinesByUuid);
 
-  const userTimeline = timelinesArray.find((tl) => tl.uuid === user_uuid);
-  const opponentTimeline = timelinesArray.find((tl) => tl.uuid === opponent_uuid);
+  const userTimeline = timelinesArray.find((tl) => tl.uuid === user_uuid) ?? {
+    uuid: user_uuid,
+    timelines: [
+      {
+        time: 0,
+        timeline: "story.enter_the_nether",
+        uuid: user_uuid,
+      },
+    ],
+  };
+  const opponentTimeline = timelinesArray.find((tl) => tl.uuid === opponent_uuid) ?? {
+    uuid: opponent_uuid,
+    timelines: [
+      {
+        time: 0,
+        timeline: "story.enter_the_nether",
+        uuid: opponent_uuid,
+      },
+    ],
+  };
 
   let uR = false;
   let oR = false;
