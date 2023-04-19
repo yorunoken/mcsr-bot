@@ -62,8 +62,6 @@ async function getMatch(match, ENCRYPTED, userArgs, index) {
       break;
   }
 
-  console.log(match);
-
   const user_avatar_url = `https://crafatar.com/avatars/${match.members[0].uuid}.png?overlay`;
   const user_username = match.members[0].nickname;
   const user_uuid = match.members[0].uuid;
