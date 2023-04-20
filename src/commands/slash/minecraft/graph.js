@@ -5,6 +5,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const fs = require("fs");
 
 async function run(interaction, username) {
+  await interaction.deferReply();
   const api = new ranked_api();
 
   let ranked_data, user;
@@ -12,12 +13,12 @@ async function run(interaction, username) {
     user = await api.getUserStats(username);
     ranked_data = await api.getRecentMatch(userArgs, { match_type: 2, count: 50 });
   } catch (err) {
-    interaction.reply({ ephemeral: true, embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    interaction.editReply({ ephemeral: true, embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
   const _function = await getGraph(user, ranked_data);
-  interaction.reply({ embeds: [_function.embed], files: [_function.attachment] });
+  interaction.editReply({ embeds: [_function.embed], files: [_function.attachment] });
 }
 
 module.exports = {

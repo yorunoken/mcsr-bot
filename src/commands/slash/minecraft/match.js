@@ -1,23 +1,64 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { EmbedBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { ranked_api } = require("mcsr-ranked-api");
 const { getMatch } = require("../../../utilities/functions/getMatch.js");
+const { getMatchStats } = require("../../../utilities/functions/getMatchStats");
 const fs = require("fs");
 
 async function run(interaction, username, opponentname, ENCRYPTED, match_type, index) {
+  await interaction.deferReply();
   const api = new ranked_api();
 
   let ranked_data;
   try {
     ranked_data = await api.getRecentMatch(username, { match_type: match_type, opponent: opponentname });
   } catch (err) {
-    interaction.reply({ ephemeral: true, embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    interaction.editReply({ ephemeral: true, embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
-  const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
+  const nextPage = new ButtonBuilder().setCustomId("next").setLabel("Next match").setStyle(ButtonStyle.Secondary);
+  const stats = new ButtonBuilder().setCustomId("stats").setLabel("Get statistics").setStyle(ButtonStyle.Primary);
+  const prevPage = new ButtonBuilder().setCustomId("prev").setLabel("Previous match").setStyle(ButtonStyle.Secondary);
+  const row = new ActionRowBuilder().addComponents(prevPage, stats, nextPage);
 
-  interaction.reply({ embeds: [embed] });
+  const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
+  const response = await interaction.editReply({ embeds: [embed], components: [row] });
+
+  const filter = (i) => i.user.id === interaction.user.id;
+  const collector = response.createMessageComponentCollector({ time: 20000, filter: filter });
+
+  collector.on("collect", async (i) => {
+    if (i.customId === "next") {
+      index++;
+
+      if (index > ranked_data.length) {
+        index--;
+      }
+      const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
+
+      await interaction.editReply({ embeds: [embed], components: [row] });
+    } else if (i.customId === "prev") {
+      index--;
+
+      if (0 >= index) {
+        index++;
+      }
+      const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
+
+      await interaction.editReply({ embeds: [embed], components: [row] });
+    } else if (i.customId === "stats") {
+      let title = i.message.embeds[0].title;
+      title = title.replace("Match ID: ", "");
+      const match = await api.getMatchStats(matchID);
+      const _embed = await getMatchStats(match);
+      interaction.editReply({ embeds: [_embed], components: [] });
+    }
+  });
+
+  collector.on("end", (i) => {
+    interaction.editReply({ embeds: [i.message.embeds[0]], components: [] });
+  });
 }
 
 module.exports = {

@@ -3,7 +3,6 @@ const { ranked_api } = require("mcsr-ranked-api");
 
 async function run(interaction) {
   interaction.reply(`Pong! 🏓`).then(async (msg) => {
-    let time = msg.createdTimestamp - interaction.createdTimestamp;
     const api = new ranked_api();
 
     const profile_start_time = Date.now();

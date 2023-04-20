@@ -4,6 +4,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const fs = require("fs");
 
 async function run(interaction, username) {
+  await interaction.deferReply();
   const api = new ranked_api();
 
   let user;
@@ -11,7 +12,7 @@ async function run(interaction, username) {
     user = await api.getUserStats(username);
   } catch (err) {
     const embed = new EmbedBuilder().setColor("Red").setTitle(`Account linking unsuccessful`).setDescription(`\`\`\`${err}\`\`\``);
-    interaction.reply({ ephemeral: true, embeds: [embed] });
+    interaction.editReply({ ephemeral: true, embeds: [embed] });
     return;
   }
 
@@ -29,7 +30,7 @@ async function run(interaction, username) {
     .setDescription(`Linked Discord account <@${interaction.user.id}>\nto Minecraft account **${nickname}**`)
     .setThumbnail(avatar_url)
     .setFooter({ text: `People can now view your Discord profile from your Minecraft profile in the bot! to turn this off, see /config` });
-  interaction.reply({ embeds: [embed] });
+  interaction.editReply({ embeds: [embed] });
 }
 
 module.exports = {

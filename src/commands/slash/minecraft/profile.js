@@ -6,13 +6,14 @@ const { findID } = require("../../../utilities/findDiscordID.js");
 const fs = require("fs");
 
 async function run(interaction, user) {
+  await interaction.deferReply();
   const api = new ranked_api();
 
   let data;
   try {
     data = await api.getUserStats(user);
   } catch (err) {
-    interaction.reply({ ephemeral: true, embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    interaction.editReply({ ephemeral: true, embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
@@ -117,7 +118,7 @@ async function run(interaction, user) {
     .setThumbnail(avatar_url)
     .setFields(fields)
     .setFooter({ text: `Stats from mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
-  interaction.reply({ embeds: [embed] });
+  interaction.editReply({ embeds: [embed] });
 }
 
 module.exports = {

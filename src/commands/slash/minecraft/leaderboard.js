@@ -1,13 +1,42 @@
 const { getLeaderboard } = require("../../../utilities/functions/getLeaderboard.js");
 const { ranked_api } = require("mcsr-ranked-api");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 async function run(interaction, page) {
+  await interaction.deferReply();
   const api = new ranked_api();
+
+  const nextPage = new ButtonBuilder().setCustomId("next").setLabel("Next page").setStyle(ButtonStyle.Secondary);
+  const prevPage = new ButtonBuilder().setCustomId("prev").setLabel("Previous page").setStyle(ButtonStyle.Secondary);
+  const row = new ActionRowBuilder().addComponents(prevPage, nextPage);
 
   const leaderboard_data = await api.getGlobalLeaderboard();
   const embed = await getLeaderboard(leaderboard_data, page);
-  interaction.reply({ embeds: [embed] });
+  const response = await interaction.editReply({ embeds: [embed], components: [row] });
+
+  const filter = (i) => i.user.id === interaction.user.id;
+  const collector = response.createMessageComponentCollector({ time: 60000, filter: filter });
+
+  collector.on("collect", async (i) => {
+    if (i.customId === "next") {
+      page++;
+
+      if (page > leaderboard_data.length) {
+        page--;
+      }
+      const embed = await getLeaderboard(leaderboard_data, page);
+      await response.edit({ embeds: [embed], components: [row] });
+    } else if (i.customId === "prev") {
+      page--;
+
+      if (0 >= page) {
+        page++;
+      }
+      const embed = await getLeaderboard(leaderboard_data, page);
+      await response.edit({ embeds: [embed], components: [row] });
+    }
+  });
 }
 
 module.exports = {

@@ -1,24 +1,53 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { EmbedBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { ranked_api } = require("mcsr-ranked-api");
+const { getMatchesList } = require("../../../utilities/functions/getMatchesList.js");
+const fs = require("fs");
 
 async function run(interaction, username, opponentname, ENCRYPTED, match_type, page) {
+  await interaction.deferReply();
   const api = new ranked_api();
-
-  if (_userArgs.endsWith("!{ENCRYPTED}")) {
-    _userArgs = _userArgs.replace(/!{ENCRYPTED}$/, "");
-    ENCRYPTED = true;
-  }
 
   let ranked_data;
   try {
     ranked_data = await api.getRecentMatch(username, { match_type: match_type, opponent: opponentname });
   } catch (err) {
-    message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    interaction.editReply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
-  const embed = await getMatchesList(ranked_data, ENCRYPTED, username, page);
+  const nextPage = new ButtonBuilder().setCustomId("next").setLabel("Next match").setStyle(ButtonStyle.Secondary);
+  const prevPage = new ButtonBuilder().setCustomId("prev").setLabel("Previous match").setStyle(ButtonStyle.Secondary);
+  const row = new ActionRowBuilder().addComponents(prevPage, nextPage);
 
-  message.channel.send({ embeds: [embed] });
+  const embed = await getMatchesList(ranked_data, ENCRYPTED, username, page);
+  const response = await interaction.editReply({ embeds: [embed], components: [row] });
+
+  const filter = (i) => i.user.id === interaction.user.id;
+  const collector = response.createMessageComponentCollector({ time: 60000, filter: filter });
+
+  collector.on("collect", async (i) => {
+    if (i.customId === "next") {
+      page++;
+
+      if (page > ranked_data.length) {
+        page--;
+      }
+      const embed = await getMatchesList(ranked_data, ENCRYPTED, username, page);
+
+      await response.edit({ embeds: [embed], components: [row] });
+    } else if (i.customId === "prev") {
+      page--;
+
+      if (0 >= page) {
+        page++;
+      }
+      const embed = await getMatchesList(ranked_data, ENCRYPTED, username, page);
+
+      await response.edit({ embeds: [embed], components: [row] });
+    }
+  });
 }
 
 module.exports = {

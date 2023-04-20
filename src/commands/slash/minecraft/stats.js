@@ -4,6 +4,7 @@ const { ranked_api } = require("mcsr-ranked-api");
 const { getMatchStats } = require("../../../utilities/functions/getMatchStats");
 
 async function run(client, interaction, ID) {
+  await interaction.deferReply();
   const api = new ranked_api();
   let GoodToGo = false;
   let EmbedValue = 0;
@@ -31,11 +32,11 @@ async function run(client, interaction, ID) {
     try {
       match = await api.getMatchStats(matchID);
     } catch (err) {
-      interaction.reply("Please provide a valid match ID");
+      interaction.editReply("Please provide a valid match ID");
       return;
     }
     const _embed = await getMatchStats(match);
-    interaction.reply({ embeds: [_embed] });
+    interaction.editReply({ embeds: [_embed] });
     return;
   }
 
@@ -50,7 +51,7 @@ async function run(client, interaction, ID) {
 
     let matchID;
     if (!embedMessages) {
-      await interaction.reply("No embeds found in the last 100 messages");
+      await interaction.editReply("No embeds found in the last 100 messages");
       return;
     }
 
@@ -59,7 +60,7 @@ async function run(client, interaction, ID) {
     do {
       try {
         if (tryCount > 100) {
-          interaction.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("No match embeds found in the last 100 messages.")] });
+          interaction.editReply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription("No match embeds found in the last 100 messages.")] });
           return;
         }
         tryCount++;
@@ -70,7 +71,7 @@ async function run(client, interaction, ID) {
 
     const match = await api.getMatchStats(matchID);
     const _embed = await getMatchStats(match);
-    interaction.reply({ embeds: [_embed] });
+    interaction.editReply({ embeds: [_embed] });
   });
 }
 
