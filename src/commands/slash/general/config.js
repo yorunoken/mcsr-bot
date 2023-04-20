@@ -3,15 +3,15 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const fs = require("fs");
 
 async function run(interaction, values) {
-  let changedValues = "";
-  for (const x of values) {
-    for (const [key, value] of Object.entries(x)) {
+  let configV = "";
+  for (const config of values) {
+    for (const [key, value] of Object.entries(config)) {
       await writeConfig(key, value, interaction);
-      changedValues += `**${key}:** \`${value}\`\n`;
+      configV += `**${key}:** \`${value}\`\n`;
     }
   }
 
-  const embed = new EmbedBuilder().setColor("Purple").setTitle("Changed values:").setDescription(`${changedValues}`);
+  const embed = new EmbedBuilder().setColor("Purple").setTitle("Changed values:").setDescription(`${configV}`);
   interaction.reply({ embeds: [embed] });
 }
 
@@ -27,9 +27,12 @@ module.exports = {
     .setDescription("Change your configs")
     .addBooleanOption((option) => option.setName("discord").setDescription("Whether or not to display your discord user in /profile")),
   run: async (client, interaction) => {
-    const discord = {
-      discord: interaction.options.getBoolean("discord").toString().toLowerCase(),
-    };
+    let discord = interaction.options.getBoolean("discord")
+      ? {
+          discord: interaction.options.getBoolean("discord").toString().toLowerCase(),
+        }
+      : "";
+
     const values = [discord];
 
     await run(interaction, values);
