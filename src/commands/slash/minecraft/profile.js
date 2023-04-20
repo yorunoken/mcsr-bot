@@ -5,15 +5,14 @@ const { ranked_api } = require("mcsr-ranked-api");
 const { findID } = require("../../../utilities/findDiscordID.js");
 const fs = require("fs");
 
-async function run(interaction, user) {
-  await interaction.deferReply();
+async function run(interaction, user, response) {
   const api = new ranked_api();
 
   let data;
   try {
     data = await api.getUserStats(user);
   } catch (err) {
-    interaction.editReply({ ephemeral: true, embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    response.edit({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
@@ -118,7 +117,7 @@ async function run(interaction, user) {
     .setThumbnail(avatar_url)
     .setFields(fields)
     .setFooter({ text: `Stats from mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
-  interaction.editReply({ embeds: [embed] });
+  response.edit({ content: "", embeds: [embed] });
 }
 
 module.exports = {
@@ -127,17 +126,19 @@ module.exports = {
     .setDescription("Get a user's mcsr ranked profile and stats")
     .addStringOption((option) => option.setName("username").setDescription("get a profile by username").setRequired(false)),
   run: async (client, interaction) => {
+    const response = await interaction.reply("Processing...");
+
     let username = interaction.options.getString("username");
     if (!username) {
       const userData = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
       try {
         username = userData[interaction.user.id].MinecraftUserID;
       } catch (err) {
-        interaction.reply({ ephmeral: true, content: "Set your minecraft username using /link" });
+        response.edit({ ephmeral: true, content: "Set your minecraft username using /link" });
       }
       username = username.replace(/!{ENCRYPTED}$/, "");
     }
 
-    await run(interaction, username);
+    await run(interaction, username, response);
   },
 };

@@ -3,8 +3,7 @@ const { ranked_api } = require("mcsr-ranked-api");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
-async function run(interaction, page) {
-  await interaction.deferReply();
+async function run(interaction, page, _i) {
   const api = new ranked_api();
 
   const nextPage = new ButtonBuilder().setCustomId("next").setLabel("Next page").setStyle(ButtonStyle.Secondary);
@@ -13,10 +12,10 @@ async function run(interaction, page) {
 
   const leaderboard_data = await api.getGlobalLeaderboard();
   const embed = await getLeaderboard(leaderboard_data, page);
-  const response = await interaction.editReply({ embeds: [embed], components: [row] });
+  await interaction.edit({ content: "", embeds: [embed], components: [row] });
 
-  const filter = (i) => i.user.id === interaction.user.id;
-  const collector = response.createMessageComponentCollector({ time: 60000, filter: filter });
+  const filter = (i) => i.user.id === _i.user.id;
+  const collector = interaction.createMessageComponentCollector({ time: 60000, filter: filter });
 
   collector.on("collect", async (i) => {
     if (i.customId === "next") {
@@ -26,7 +25,7 @@ async function run(interaction, page) {
         page--;
       }
       const embed = await getLeaderboard(leaderboard_data, page);
-      await response.edit({ embeds: [embed], components: [row] });
+      await interaction.edit({ embeds: [embed], components: [row] });
     } else if (i.customId === "prev") {
       page--;
 
@@ -34,7 +33,7 @@ async function run(interaction, page) {
         page++;
       }
       const embed = await getLeaderboard(leaderboard_data, page);
-      await response.edit({ embeds: [embed], components: [row] });
+      await interaction.edit({ embeds: [embed], components: [row] });
     }
   });
 }
@@ -46,7 +45,8 @@ module.exports = {
     .addIntegerOption((option) => option.setName("page").setDescription("Provide a page").setMinValue(1).setMaxValue(6).setRequired(false)),
   run: async (client, interaction) => {
     const page = interaction.options.getInteger("page") ?? "1";
+    const response = await interaction.reply("Processing...");
 
-    await run(interaction, page);
+    await run(response, page, interaction);
   },
 };
