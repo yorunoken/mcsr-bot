@@ -1,6 +1,6 @@
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 const Chart = require("chart.js");
-const Canvas = require("canvas");
+const Canvas = require("@napi-rs/canvas");
 
 async function getGraph(user, match_data) {
   const elo_history = getEloHistory(user, match_data); // gets elo history (last 50 matches only), will make it so it gets more later
