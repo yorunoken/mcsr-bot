@@ -14,7 +14,7 @@ async function getLeaderboard(data, page) {
 
   const users = data.users.slice(start, end);
 
-  const season_time = `**Season ends in:** <t:${data.season_end_time / 1000}:R>`;
+  const season_time = `**Season ends in:** <t:${data.season_end_time}:R>`;
 
   const embed = new EmbedBuilder()
     .setTitle("Season 1")
