@@ -18,7 +18,9 @@
     "dotenv": "^16.0.3",
     "easy-table": "^1.2.0",
     "fs": "^0.0.1-security",
-    "mongodb": "^5.2.0"
+    "mongodb": "^5.2.0",
+    "ms": "^2.1.3",
+    "skia-canvas": "^1.0.1"
   },
   "devDependencies": {
     "mcsr-ranked-api": "^1.3.2"

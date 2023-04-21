@@ -1,6 +1,6 @@
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 const Chart = require("chart.js");
-const Canvas = require("@napi-rs/canvas");
+const { Canvas } = require("skia-canvas");
 
 async function getGraph(user, match_data) {
   const elo_history = getEloHistory(user, match_data); // gets elo history (last 50 matches only), will make it so it gets more later
@@ -10,7 +10,7 @@ async function getGraph(user, match_data) {
     _days.push(i);
   }
 
-  const canvas = Canvas.createCanvas(1000, 600);
+  const canvas = new Canvas(1000, 600);
   const ctx = canvas.getContext("2d");
   const plugin = {
     id: "custom_canvas_background_color",
@@ -95,7 +95,7 @@ async function getGraph(user, match_data) {
           title: {
             display: true,
             text: "Matches ago",
-            color: "rgba(255,255,255",
+            color: "rgba(255,255,255)",
             font: {
               weight: "bold",
               size: 18,
@@ -117,13 +117,13 @@ async function getGraph(user, match_data) {
     curr_rank = "-";
   }
 
-  const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: "chart.png" });
+  const attachment = new AttachmentBuilder(await canvas.toBuffer("png"), { name: "random.png" });
   const embed = new EmbedBuilder()
     .setColor("Purple")
     .setTitle(`Elo graph of ${username} (${curr_elo} elo #${curr_rank})`)
     .setDescription(`For full graph, visit [Desktop Folder's website](https://disrespec.tech/elo/?username=${username})`)
     .setThumbnail(avatar_url)
-    .setImage("attachment://chart.png");
+    .setImage("attachment://random.png");
   return { embed, attachment };
 }
 
