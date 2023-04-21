@@ -13,7 +13,7 @@ async function run(interaction, user) {
   try {
     data = await api.getUserStats(user);
   } catch (err) {
-    interaction.editRely({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    interaction.editReply({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 

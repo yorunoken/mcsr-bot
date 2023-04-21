@@ -6,6 +6,7 @@ const { getMatchesList } = require("../../../utilities/functions/getMatchesList.
 const fs = require("fs");
 
 async function run(interaction, username, opponentname, ENCRYPTED, match_type, page) {
+  await interaction.deferReply();
   const api = new ranked_api();
 
   let ranked_data;
