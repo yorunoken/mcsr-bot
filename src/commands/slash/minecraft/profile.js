@@ -5,14 +5,14 @@ const { ranked_api } = require("mcsr-ranked-api");
 const { findID } = require("../../../utilities/findDiscordID.js");
 const fs = require("fs");
 
-async function run(interaction, user, response) {
+async function run(interaction, user) {
   const api = new ranked_api();
 
   let data;
   try {
     data = await api.getUserStats(user);
   } catch (err) {
-    response.edit({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    interaction.editRely({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
@@ -117,7 +117,7 @@ async function run(interaction, user, response) {
     .setThumbnail(avatar_url)
     .setFields(fields)
     .setFooter({ text: `Stats from mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
-  response.edit({ content: "", embeds: [embed] });
+  interaction.editReply({ content: "", embeds: [embed] });
 }
 
 module.exports = {
@@ -126,19 +126,22 @@ module.exports = {
     .setDescription("Get a user's mcsr ranked profile and stats")
     .addStringOption((option) => option.setName("username").setDescription("get a profile by username").setRequired(false)),
   run: async (client, interaction) => {
-    const response = await interaction.reply("Processing...");
-
     let username = interaction.options.getString("username");
     if (!username) {
       const userData = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
       try {
-        username = userData[interaction.user.id].MinecraftUserID;
+        username =
+          userData[interaction.user.id].MinecraftUserID ??
+          (() => {
+            throw new Error("no userarg");
+          })();
       } catch (err) {
-        response.edit({ ephmeral: true, content: "Set your minecraft username using /link" });
+        interaction.reply({ ephmeral: true, content: "Set your minecraft username using /link" });
+        return;
       }
       username = username.replace(/!{ENCRYPTED}$/, "");
     }
 
-    await run(interaction, username, response);
+    await run(interaction, username);
   },
 };

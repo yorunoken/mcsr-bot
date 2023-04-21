@@ -6,13 +6,14 @@ const { getMatchStats } = require("../../../utilities/functions/getMatchStats");
 const fs = require("fs");
 
 async function run(interaction, username, opponentname, ENCRYPTED, match_type, index) {
+  await interaction.deferReply();
   const api = new ranked_api();
 
   let ranked_data;
   try {
     ranked_data = await api.getRecentMatch(username, { match_type: match_type, opponent: opponentname });
   } catch (err) {
-    await interaction.reply({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    await interaction.editReply({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
@@ -22,7 +23,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
   const row = new ActionRowBuilder().addComponents(prevPage, stats, nextPage);
 
   const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
-  const response = await interaction.reply({ content: "", embeds: [embed], components: [row] });
+  const response = await interaction.editReply({ content: "", embeds: [embed], components: [row] });
 
   const filter = (i) => i.user.id === interaction.user.id;
   const collector = response.createMessageComponentCollector({ time: 20000, filter: filter });
@@ -75,9 +76,14 @@ module.exports = {
     if (!username) {
       const userData = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
       try {
-        username = userData[interaction.user.id].MinecraftUserID;
+        username =
+          userData[interaction.user.id].MinecraftUserID ??
+          (() => {
+            throw new Error("no userarg");
+          })();
       } catch (err) {
-        await interaction.replace({ ephmeral: true, content: "Set your minecraft username using /link" });
+        await interaction.reply({ ephmeral: true, content: "Set your minecraft username using /link" });
+        return;
       }
       username = username.replace(/!{ENCRYPTED}$/, "");
       ENCRYPTED = true;
