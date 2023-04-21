@@ -6,6 +6,7 @@ const { findID } = require("../../../utilities/findDiscordID.js");
 const fs = require("fs");
 
 async function run(interaction, user) {
+  await interaction.deferReply();
   const api = new ranked_api();
 
   let data;
