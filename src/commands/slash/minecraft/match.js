@@ -5,14 +5,14 @@ const { getMatch } = require("../../../utilities/functions/getMatch.js");
 const { getMatchStats } = require("../../../utilities/functions/getMatchStats");
 const fs = require("fs");
 
-async function run(response, interaction, username, opponentname, ENCRYPTED, match_type, index) {
+async function run(interaction, username, opponentname, ENCRYPTED, match_type, index) {
   const api = new ranked_api();
 
   let ranked_data;
   try {
     ranked_data = await api.getRecentMatch(username, { match_type: match_type, opponent: opponentname });
   } catch (err) {
-    await response.edit({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    await interaction.reply({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
@@ -22,7 +22,7 @@ async function run(response, interaction, username, opponentname, ENCRYPTED, mat
   const row = new ActionRowBuilder().addComponents(prevPage, stats, nextPage);
 
   const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
-  await response.edit({ content: "", embeds: [embed], components: [row] });
+  const response = await interaction.reply({ content: "", embeds: [embed], components: [row] });
 
   const filter = (i) => i.user.id === interaction.user.id;
   const collector = response.createMessageComponentCollector({ time: 20000, filter: filter });
@@ -69,8 +69,6 @@ module.exports = {
     .addIntegerOption((option) => option.setName("index").setDescription("Index of the match").setMinValue(1).setMaxValue(50).setRequired(false))
     .addStringOption((option) => option.setName("type").setDescription("Select a match type").setRequired(false).addChoices({ name: "ranked", value: "2" }, { name: "casual", value: "1" }, { name: "private", value: "3" })),
   run: async (client, interaction) => {
-    const response = await interaction.reply("Processing...");
-
     let ENCRYPTED = false;
     const opponent = interaction.options.getString("opponent") ?? undefined;
     let username = interaction.options.getString("user");
@@ -79,7 +77,7 @@ module.exports = {
       try {
         username = userData[interaction.user.id].MinecraftUserID;
       } catch (err) {
-        await response.edit({ ephmeral: true, content: "Set your minecraft username using /link" });
+        await interaction.replace({ ephmeral: true, content: "Set your minecraft username using /link" });
       }
       username = username.replace(/!{ENCRYPTED}$/, "");
       ENCRYPTED = true;
@@ -90,6 +88,6 @@ module.exports = {
       index = 0;
     }
 
-    await run(response, interaction, username, opponent, ENCRYPTED, match_type, index);
+    await run(interaction, username, opponent, ENCRYPTED, match_type, index);
   },
 };
