@@ -3,21 +3,20 @@ const Chart = require("chart.js");
 const { Canvas } = require("skia-canvas");
 
 async function getGraph(user, match_data) {
-  const elo_history = getEloHistory(user, match_data); // gets elo history (last 50 matches only), will make it so it gets more later
+  const elo_history = getEloHistory(user, match_data);
   
   let peak = 0;
-  for (let v of elo_history){
-    if(v > peak){
-      peak = v
+  for (let v of elo_history) {
+    if (v > peak) {
+      peak = v;
     }
   }
 
-  let _days = [];
-  for (let i = elo_history.length; i > 0; i--) {
-    _days.push(i);
-  } 
+  var _days = Array.apply(null, Array(elo_history.length)).map(function (x, i) { return i; });
+  _days = _days.reverse();
 
   const canvas = new Canvas(1000, 600);
+  canvas.gpu = false;
   const ctx = canvas.getContext("2d");
   const plugin = {
     id: "custom_canvas_background_color",
@@ -101,7 +100,7 @@ async function getGraph(user, match_data) {
           },
           title: {
             display: true,
-            text: "Matches ago",
+            text: "Days ago",
             color: "rgba(255,255,255)",
             font: {
               weight: "bold",
@@ -128,13 +127,13 @@ async function getGraph(user, match_data) {
   const embed = new EmbedBuilder()
     .setColor("Purple")
     .setTitle(`Elo graph of ${username} (${curr_elo} elo #${curr_rank})`)
-    .setDescription(`Peak elo: ${peak}\nFor full graph, visit [Desktop Folder's website](https://disrespec.tech/elo/?username=${username})`)
+    .setDescription(`Peak elo: **${peak}**`)
     .setThumbnail(avatar_url)
     .setImage("attachment://random.png");
   return { embed, attachment };
 }
 
-function getEloHistory(user, data) {
+function getEloHistory(user, data) {  
   let elo_history = [];
   for (let i = data.length - 1; i >= 0; i--) {
     let match = data[i];
@@ -145,9 +144,9 @@ function getEloHistory(user, data) {
     if (_elo !== -1) {
       elo_history.push(_elo);
     }
-  }
+  } 
   elo_history.push(user.elo_rate); // this is to push user's current elo because it's not included
-  return elo_history;
+  return elo_history
 }
 
 function sortScoreChanges(user, data) {

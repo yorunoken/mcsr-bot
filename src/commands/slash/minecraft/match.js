@@ -29,31 +29,33 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
   const collector = response.createMessageComponentCollector({ time: 20000, filter: filter });
 
   collector.on("collect", async (i) => {
-    if (i.customId === "next") {
-      index++;
-
-      if (index > ranked_data.length) {
-        index--;
-      }
-      const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
-
-      await response.edit({ embeds: [embed], components: [row] });
-    } else if (i.customId === "prev") {
-      index--;
-
-      if (0 >= index) {
+    try {
+      if (i.customId === "next") {
         index++;
+  
+        if (index > ranked_data.length) {
+          index--;
+        }
+        const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
+  
+        await response.edit({ embeds: [embed], components: [row] });
+      } else if (i.customId === "prev") {
+        index--;
+  
+        if (0 >= index) {
+          index++;
+        }
+        const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
+  
+        await response.edit({ embeds: [embed], components: [row] });
+      } else if (i.customId === "stats") {
+        let title = i.message.embeds[0].title;
+        const matchID = title.replace("Match ID: ", "");
+        const match = await api.getMatchStats(matchID);
+        const embed = await getMatchStats(match);
+        await response.edit({ embeds: [embed], components: [] });
       }
-      const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
-
-      await response.edit({ embeds: [embed], components: [row] });
-    } else if (i.customId === "stats") {
-      let title = i.message.embeds[0].title;
-      const matchID = title.replace("Match ID: ", "");
-      const match = await api.getMatchStats(matchID);
-      const embed = await getMatchStats(match);
-      await response.edit({ embeds: [embed], components: [] });
-    }
+    } catch (e) {}
   });
 
   collector.on("end", async (i) => {
