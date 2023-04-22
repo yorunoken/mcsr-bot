@@ -1,11 +1,10 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { getMatch } = require("../../../utilities/functions/getMatch.js");
-const { getMatchStats } = require("../../../utilities/functions/getMatchStats");
-const fs = require("fs");
+const { getMatch } = require("../../utilities/functions/getMatch.js");
+const { getMatchStats } = require("../../utilities/functions/getMatchStats");
 
-async function run(interaction, username, opponentname, ENCRYPTED, match_type, index) {
+async function run(interaction, username, opponentname, ENCRYPTED, match_type, index, collection) {
   await interaction.deferReply();
   const api = new ranked_api();
 
@@ -22,7 +21,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
   const prevPage = new ButtonBuilder().setCustomId("prev").setLabel("Previous match").setStyle(ButtonStyle.Secondary);
   const row = new ActionRowBuilder().addComponents(prevPage, stats, nextPage);
 
-  const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
+  const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index, collection);
   const response = await interaction.editReply({ content: "", embeds: [embed], components: [row] });
 
   const filter = (i) => i.user.id === interaction.user.id;
@@ -32,21 +31,21 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
     try {
       if (i.customId === "next") {
         index++;
-  
+
         if (index > ranked_data.length) {
           index--;
         }
-        const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
-  
+        const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index, collection);
+
         await response.edit({ embeds: [embed], components: [row] });
       } else if (i.customId === "prev") {
         index--;
-  
+
         if (0 >= index) {
           index++;
         }
-        const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index);
-  
+        const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index, collection);
+
         await response.edit({ embeds: [embed], components: [row] });
       } else if (i.customId === "stats") {
         let title = i.message.embeds[0].title;
@@ -73,15 +72,16 @@ module.exports = {
     .addStringOption((option) => option.setName("opponent").setDescription("get a profile by username").setRequired(false))
     .addIntegerOption((option) => option.setName("index").setDescription("Index of the match").setMinValue(1).setMaxValue(50).setRequired(false))
     .addStringOption((option) => option.setName("type").setDescription("Select a match type").setRequired(false).addChoices({ name: "ranked", value: "2" }, { name: "casual", value: "1" }, { name: "private", value: "3" })),
-  run: async (client, interaction) => {
+  run: async (client, interaction, db) => {
+    const collection = db.collection("user_data");
     let ENCRYPTED = false;
     const opponent = interaction.options.getString("opponent") ?? undefined;
     let username = interaction.options.getString("user");
     if (!username) {
-      const userData = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
+      const users = await collection.findOne({});
       try {
         username =
-          userData[interaction.user.id].MinecraftUserID ??
+          users[interaction.user.id].MinecraftUserID ??
           (() => {
             throw new Error("no userarg");
           })();
@@ -98,6 +98,6 @@ module.exports = {
       index = 0;
     }
 
-    await run(interaction, username, opponent, ENCRYPTED, match_type, index);
+    await run(interaction, username, opponent, ENCRYPTED, match_type, index, collection);
   },
 };

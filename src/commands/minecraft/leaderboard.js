@@ -1,4 +1,4 @@
-const { getLeaderboard } = require("../../../utilities/functions/getLeaderboard.js");
+const { getLeaderboard } = require("../../utilities/functions/getLeaderboard.js");
 const { ranked_api } = require("mcsr-ranked-api");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");

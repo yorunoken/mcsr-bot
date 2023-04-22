@@ -2,8 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { getMatchesList } = require("../../../utilities/functions/getMatchesList.js");
-const fs = require("fs");
+const { getMatchesList } = require("../../utilities/functions/getMatchesList.js");
 
 async function run(interaction, username, opponentname, ENCRYPTED, match_type, page) {
   await interaction.deferReply();
@@ -58,15 +57,16 @@ module.exports = {
     .addStringOption((option) => option.setName("opponent").setDescription("get a profile by username").setRequired(false))
     .addIntegerOption((option) => option.setName("page").setDescription("Page of the list").setMinValue(1).setMaxValue(5).setRequired(false))
     .addStringOption((option) => option.setName("type").setDescription("Select a match type").setRequired(false).addChoices({ name: "ranked", value: "2" }, { name: "casual", value: "1" }, { name: "private", value: "3" })),
-  run: async (client, interaction) => {
+  run: async (client, interaction, db) => {
+    const collection = db.collection("user_data");
     let ENCRYPTED = false;
     const opponent = interaction.options.getString("opponent") ?? undefined;
     let username = interaction.options.getString("user");
     if (!username) {
-      const userData = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
       try {
+        const users = await collection.findOne({});
         username =
-          userData[interaction.user.id].MinecraftUserID ??
+          users[interaction.user.id].MinecraftUserID ??
           (() => {
             throw new Error("no userarg");
           })();

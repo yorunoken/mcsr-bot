@@ -1,15 +1,16 @@
-const prefixes = require("../db/prefixes.json");
 const { Collection } = require("discord.js");
 const ms = require("ms");
 const cooldown = new Collection();
 
 module.exports = {
   name: "messageCreate",
-  execute: async (message) => {
+  execute: async (message, database) => {
     let client = message.client;
     if (message.author.bot) return;
     if (message.channel.type === "dm") return;
 
+    const collection = database.collection("prefixes");
+    const prefixes = await collection.findOne();
     const prefix = prefixes[message.guild.id] ?? "!";
     if (!message.content.startsWith(prefix)) return;
     const args = message.content.slice(prefix.length).trim().split(/ +/g);

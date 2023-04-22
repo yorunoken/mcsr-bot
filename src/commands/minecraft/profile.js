@@ -1,29 +1,18 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
-const { FindUserargs } = require("../../../utilities/findUserargs.js");
-const { findTier } = require("../../../utilities/findRank.js");
+const { findTier } = require("../../utilities/findRank.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { findID } = require("../../../utilities/findDiscordID.js");
+const { findID } = require("../../utilities/findDiscordID.js");
 
-async function run(client, message, args, prefix) {
-  await message.channel.sendTyping();
-
+async function run(interaction, user, collection) {
+  await interaction.deferReply();
   const api = new ranked_api();
-  let _userArgs;
-
-  var userArgs = await FindUserargs(message, args, prefix);
-  if (userArgs === undefined) return;
-    
-  if (!Array.isArray(userArgs)) {
-    _userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
-  } else {
-    _userArgs = userArgs[0];
-  }
 
   let data;
   try {
-    data = await api.getUserStats(_userArgs);
+    data = await api.getUserStats(user);
   } catch (err) {
-    message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
+    interaction.editReply({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
   }
 
@@ -79,7 +68,7 @@ async function run(client, message, args, prefix) {
   }
   const winrate = (combined_records.win / (combined_records.win + combined_records.draw + combined_records.lose)) * 100;
 
-  const discord_ID = await findID(`${data.uuid}!{ENCRYPTED}`);
+  const discord_ID = await findID(`${data.uuid}!{ENCRYPTED}`, collection);
   const discord_row = discord_ID ? `<:discord:1095835124018458634> **Discord:** <@${discord_ID}>` : "<:discord:1095835124018458634> **Discord:** **Not linked**";
 
   const youtube_ID = data.connections.youtube;
@@ -128,14 +117,33 @@ async function run(client, message, args, prefix) {
     .setThumbnail(avatar_url)
     .setFields(fields)
     .setFooter({ text: `Stats from mcsrranked.com`, iconURL: "https://media.discordapp.net/attachments/1074302646883733554/1083683972661379122/icon_x512.png" });
-  message.channel.send({ embeds: [embed] });
+  interaction.editReply({ content: "", embeds: [embed] });
 }
 
 module.exports = {
-  name: "profile",
-  aliases: ["profile", "mcsr", "mc", "minecraft"],
-  cooldown: 5000,
-  run: async (client, message, args, prefix) => {
-    await run(client, message, args, prefix);
+  data: new SlashCommandBuilder()
+    .setName("profile")
+    .setDescription("Get a user's mcsr ranked profile and stats")
+    .addStringOption((option) => option.setName("username").setDescription("get a profile by username").setRequired(false)),
+  run: async (client, interaction, db) => {
+    const collection = db.collection("user_data");
+
+    let username = interaction.options.getString("username");
+    if (!username) {
+      try {
+        const users = await collection.findOne({});
+        username =
+          users[interaction.user.id].MinecraftUserID ??
+          (() => {
+            throw new Error("no userarg");
+          })();
+      } catch (err) {
+        interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
+        return;
+      }
+      username = username.replace(/!{ENCRYPTED}$/, "");
+    }
+
+    await run(interaction, username, collection);
   },
 };

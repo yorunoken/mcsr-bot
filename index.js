@@ -21,46 +21,27 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel, Partials.GuildMember, Partials.Reaction, Partials.GuildScheduledEvent, Partials.User, Partials.ThreadMember],
 });
 require("dotenv/config");
+const { MongoClient } = require("mongodb");
 const fs = require("fs");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v10");
 
 const token = process.env.TOKEN;
 
-client.commands = new Collection();
 client.slashcommands = new Collection();
 client.commandaliases = new Collection();
 
 const rest = new REST({ version: "10" }).setToken(token);
 
-// command handler
-const commands = [];
-
-const prefixFolders = fs.readdirSync("./src/commands/prefix");
-for (const folder of prefixFolders) {
-  const commandFiles = fs.readdirSync(`./src/commands/prefix/${folder}`);
-
-  for (const file of commandFiles) {
-    const command = require(`./src/commands/prefix/${folder}/${file}`);
-    client.commands.set(command.name, command);
-    commands.push(command.name, command);
-    if (command.aliases && Array.isArray(command.aliases)) {
-      command.aliases.forEach((alias) => {
-        client.commandaliases.set(alias, command.name);
-      });
-    }
-  }
-}
-
 // slash command handler
 const slashcommands = [];
 
-const slashFolders = fs.readdirSync("./src/commands/slash");
+const slashFolders = fs.readdirSync("./src/commands");
 for (const folder of slashFolders) {
-  const commandFiles = fs.readdirSync(`./src/commands/slash/${folder}`);
+  const commandFiles = fs.readdirSync(`./src/commands/${folder}`);
 
   for (const file of commandFiles) {
-    const command = require(`./src/commands/slash/${folder}/${file}`);
+    const command = require(`./src/commands/${folder}/${file}`);
     slashcommands.push(command.data.toJSON());
     client.slashcommands.set(command.data.name, command);
   }
@@ -75,10 +56,18 @@ client.on("ready", async () => {
   }
 });
 
-// event handler
-fs.readdirSync("./src/events").forEach(async (file) => {
-  const event = await require(`./src/events/${file}`);
-  client.on(event.name, (...args) => event.execute(...args));
+async function events() {
+  const client = await MongoClient.connect(process.env.MONGO);
+  console.log("Successfully connected to MongoDB!");
+  return client.db("rankedBot");
+}
+
+events().then((database) => {
+  // event handler
+  fs.readdirSync("./src/events").forEach(async (file) => {
+    const event = await require(`./src/events/${file}`);
+    client.on(event.name, (...args) => event.execute(...args, database));
+  });
 });
 
 // nodejs events

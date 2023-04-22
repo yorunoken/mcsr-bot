@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { findID } = require("../findDiscordID");
 
-async function getMatch(match, ENCRYPTED, userArgs, index) {
+async function getMatch(match, ENCRYPTED, userArgs, index, collection) {
   if (match == undefined) {
     return new EmbedBuilder().setColor("Purple").setDescription("No recent matches with the filters found.");
   }
@@ -127,10 +127,10 @@ async function getMatch(match, ENCRYPTED, userArgs, index) {
       break;
   }
 
-  const user_discord = await findID(`${user_uuid}!{ENCRYPTED}`);
+  const user_discord = await findID(`${user_uuid}!{ENCRYPTED}`, collection);
   const user_ID = user_discord ? `\n**Linked discord:** <@${user_discord}>` : "";
 
-  const opponent_discord = await findID(`${opponent_uuid}!{ENCRYPTED}`);
+  const opponent_discord = await findID(`${opponent_uuid}!{ENCRYPTED}`, collection);
   const opponent_ID = opponent_discord ? `\n**Linked discord:** <@${opponent_discord}>` : "";
 
   function addNumSuffix(num) {

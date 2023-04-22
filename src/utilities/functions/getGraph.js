@@ -4,7 +4,7 @@ const { Canvas } = require("skia-canvas");
 
 async function getGraph(user, match_data) {
   const elo_history = getEloHistory(user, match_data);
-  
+
   let peak = 0;
   for (let v of elo_history) {
     if (v > peak) {
@@ -12,8 +12,10 @@ async function getGraph(user, match_data) {
     }
   }
 
-  var _days = Array.apply(null, Array(elo_history.length)).map(function (x, i) { return i; });
-  _days = _days.reverse();
+  var _matches = Array.apply(null, Array(elo_history.length)).map(function (x, i) {
+    return i;
+  });
+  _matches = _matches.reverse();
 
   const canvas = new Canvas(1000, 600);
   canvas.gpu = false;
@@ -37,7 +39,7 @@ async function getGraph(user, match_data) {
     type: "line",
     plugins: [plugin],
     data: {
-      labels: _days,
+      labels: _matches,
       datasets: [
         // Elo
         {
@@ -100,7 +102,7 @@ async function getGraph(user, match_data) {
           },
           title: {
             display: true,
-            text: "Days ago",
+            text: "Games ago",
             color: "rgba(255,255,255)",
             font: {
               weight: "bold",
@@ -124,16 +126,11 @@ async function getGraph(user, match_data) {
   }
 
   const attachment = new AttachmentBuilder(await canvas.toBuffer("png"), { name: "random.png" });
-  const embed = new EmbedBuilder()
-    .setColor("Purple")
-    .setTitle(`Elo graph of ${username} (${curr_elo} elo #${curr_rank})`)
-    .setDescription(`Peak elo: **${peak}**`)
-    .setThumbnail(avatar_url)
-    .setImage("attachment://random.png");
-  return { embed, attachment };
+  const embed = new EmbedBuilder().setColor("Purple").setTitle(`Elo graph of ${username} (${curr_elo} elo #${curr_rank})`).setDescription(`Peak elo: **${peak}**`).setThumbnail(avatar_url).setImage("attachment://random.png");
+  return { embed, attachment, games: elo_history.length };
 }
 
-function getEloHistory(user, data) {  
+function getEloHistory(user, data) {
   let elo_history = [];
   for (let i = data.length - 1; i >= 0; i--) {
     let match = data[i];
@@ -144,9 +141,9 @@ function getEloHistory(user, data) {
     if (_elo !== -1) {
       elo_history.push(_elo);
     }
-  } 
+  }
   elo_history.push(user.elo_rate); // this is to push user's current elo because it's not included
-  return elo_history
+  return elo_history;
 }
 
 function sortScoreChanges(user, data) {

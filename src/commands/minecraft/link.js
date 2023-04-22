@@ -1,9 +1,8 @@
 const { EmbedBuilder } = require("discord.js");
 const { ranked_api } = require("mcsr-ranked-api");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const fs = require("fs");
 
-async function run(interaction, username) {
+async function run(interaction, username, db) {
   await interaction.deferReply();
   const api = new ranked_api();
 
@@ -20,9 +19,11 @@ async function run(interaction, username) {
   const nickname = user.nickname;
   const avatar_url = `https://crafatar.com/avatars/${user_id}.png?overlay`;
 
-  const userData = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
-  userData[interaction.user.id] = { ...userData[interaction.user.id], MinecraftUserID: `${user_id}!{ENCRYPTED}` };
-  await fs.promises.writeFile("./src/db/user-data.json", JSON.stringify(userData, null, 2));
+  const collection = db.collection("user_data");
+  const filter = { [interaction.user.id]: { $exists: true } };
+  const update = { $set: { [`${interaction.user.id}.MinecraftUserID`]: `${user_id}!{ENCRYPTED}` } };
+
+  const newCev = await collection.updateOne(filter, update);
 
   const embed = new EmbedBuilder()
     .setColor("Green")
@@ -38,9 +39,9 @@ module.exports = {
     .setName("link")
     .setDescription("Link your minecraft account to the bot")
     .addStringOption((option) => option.setName("username").setDescription("Your minecraft username").setRequired(true)),
-  run: async (client, interaction) => {
+  run: async (client, interaction, db) => {
     const username = interaction.options.getString("username");
 
-    await run(interaction, username);
+    await run(interaction, username, db);
   },
 };

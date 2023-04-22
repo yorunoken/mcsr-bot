@@ -1,15 +1,17 @@
-const fs = require("fs");
-async function findID(searchValue) {
-  const data = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
-  const foundKey = Object.keys(data).find((key) => data[key].MinecraftUserID === searchValue);
-  try {
-    if (data[foundKey].discord == "true" || data[foundKey].discord == "1" || data[foundKey].discord == undefined) {
-      return foundKey;
+async function findID(searchValue, collection) {
+  const users = await collection.findOne({});
+  let userID = "";
+  for (const key in users) {
+    if (users[key].MinecraftUserID === searchValue) {
+      userID = key;
+      break;
     }
-  } catch (err) {
-    return undefined;
   }
-  return null;
+
+  if (users[userID].discord === false) {
+    return null;
+  }
+  return userID;
 }
 
 module.exports = { findID };

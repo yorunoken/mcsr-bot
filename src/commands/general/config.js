@@ -1,12 +1,11 @@
 const { EmbedBuilder } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const fs = require("fs");
 
-async function run(interaction, values) {
+async function run(interaction, values, db) {
   let configV = "";
   for (const config of values) {
     for (const [key, value] of Object.entries(config)) {
-      await writeConfig(key, value, interaction);
+      await writeConfig(key, value, interaction, db);
       configV += `**${key}:** \`${value}\`\n`;
     }
   }
@@ -15,10 +14,13 @@ async function run(interaction, values) {
   interaction.reply({ embeds: [embed] });
 }
 
-async function writeConfig(c_n, c_v, interaction) {
-  const data = JSON.parse(await fs.promises.readFile("./src/db/user-data.json"));
-  data[interaction.user.id] = { ...data[interaction.user.id], [c_n]: c_v };
-  await fs.promises.writeFile("./src/db/user-data.json", JSON.stringify(data, null, 2));
+async function writeConfig(c_n, c_v, interaction, db) {
+  const collection = db.collection("user_data");
+  const filter = { [interaction.user.id]: { $exists: true } };
+  const update = { $set: { [`${interaction.user.id}.${c_n}`]: c_v } };
+  const options = { upsert: true };
+
+  await collection.updateOne(filter, update, options);
 }
 
 module.exports = {
@@ -26,7 +28,7 @@ module.exports = {
     .setName("config")
     .setDescription("Change your configs")
     .addBooleanOption((option) => option.setName("discord").setDescription("Whether or not to display your discord user in /profile")),
-  run: async (client, interaction) => {
+  run: async (client, interaction, db) => {
     let discord = interaction.options.getBoolean("discord")
       ? {
           discord: interaction.options.getBoolean("discord").toString().toLowerCase(),
@@ -35,6 +37,6 @@ module.exports = {
 
     const values = [discord];
 
-    await run(interaction, values);
+    await run(interaction, values, db);
   },
 };
