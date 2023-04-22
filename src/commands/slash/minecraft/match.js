@@ -82,7 +82,7 @@ module.exports = {
             throw new Error("no userarg");
           })();
       } catch (err) {
-        await interaction.reply({ ephmeral: true, content: "Set your minecraft username using /link" });
+        await interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
         return;
       }
       username = username.replace(/!{ENCRYPTED}$/, "");

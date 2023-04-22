@@ -41,7 +41,7 @@ async function FindUserargs(message, args, prefix) {
           userargs = userData[message.author.id].MinecraftUserID;
         } catch (err) {
           console.error(err);
-          message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`Set your minecraft username by typing ${prefix}link "**your username**"`)] });
+          message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`Either specify a username, or connect your account with /link`)] });
           return;
         }
       }
@@ -52,7 +52,7 @@ async function FindUserargs(message, args, prefix) {
         userargs = userData[message.author.id].MinecraftUserID;
       } catch (err) {
         console.error(err);
-        message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`Set your minecraft username by typing ${prefix}link "**your username**"`)] });
+        message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`Either specify a username, or connect your account with /link"`)] });
         return;
       }
     } else {
