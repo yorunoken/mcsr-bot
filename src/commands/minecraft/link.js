@@ -22,8 +22,9 @@ async function run(interaction, username, db) {
   const collection = db.collection("user_data");
   const filter = { [interaction.user.id]: { $exists: true } };
   const update = { $set: { [`${interaction.user.id}.MinecraftUserID`]: `${user_id}!{ENCRYPTED}` } };
+  const options = { upsert: true };
 
-  const newCev = await collection.updateOne(filter, update);
+  await collection.updateOne(filter, update, options);
 
   const embed = new EmbedBuilder()
     .setColor("Green")

@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { EmbedBuilder } = require("discord.js");
 const { findTier } = require("../../utilities/findRank.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { findID } = require("../../utilities/findDiscordID.js");
 
 async function run(interaction, user, collection) {
   await interaction.deferReply();
@@ -68,7 +67,7 @@ async function run(interaction, user, collection) {
   }
   const winrate = (combined_records.win / (combined_records.win + combined_records.draw + combined_records.lose)) * 100;
 
-  const discord_ID = await findID(`${data.uuid}!{ENCRYPTED}`, collection);
+  const discord_ID = data.connections.discord.id;
   const discord_row = discord_ID ? `<:discord:1095835124018458634> **Discord:** <@${discord_ID}>` : "<:discord:1095835124018458634> **Discord:** **Not linked**";
 
   const youtube_ID = data.connections.youtube;
@@ -126,12 +125,14 @@ module.exports = {
     .setDescription("Get a user's mcsr ranked profile and stats")
     .addStringOption((option) => option.setName("username").setDescription("get a profile by username").setRequired(false)),
   run: async (client, interaction, db) => {
+    const filter = { [interaction.user.id]: { $exists: true } };
     const collection = db.collection("user_data");
 
     let username = interaction.options.getString("username");
     if (!username) {
       try {
-        const users = await collection.findOne({});
+        const users = await collection.findOne(filter);
+        console.log(users);
         username =
           users[interaction.user.id].MinecraftUserID ??
           (() => {
