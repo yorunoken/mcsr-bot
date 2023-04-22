@@ -12,8 +12,8 @@ async function getGraph(user, match_data) {
     }
   }
 
-  var _days = Array.apply(null, Array(elo_history.length)).map(function (x, i) { return i; });
-  _days = _days.reverse();
+  var _matches = Array.apply(null, Array(elo_history.length)).map(function (x, i) { return i; });
+  _matches = _matches.reverse();
 
   const canvas = new Canvas(1000, 600);
   canvas.gpu = false;
@@ -37,7 +37,7 @@ async function getGraph(user, match_data) {
     type: "line",
     plugins: [plugin],
     data: {
-      labels: _days,
+      labels: _matches,
       datasets: [
         // Elo
         {
@@ -100,7 +100,7 @@ async function getGraph(user, match_data) {
           },
           title: {
             display: true,
-            text: "Days ago",
+            text: "Matches ago",
             color: "rgba(255,255,255)",
             font: {
               weight: "bold",

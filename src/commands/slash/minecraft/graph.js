@@ -14,7 +14,7 @@ async function run(interaction, username) {
     var page = 0;
     while (page < 100) {
       try { var pageData = await api.getRecentMatch(username, { match_type: 2, count: 50, page: page }); }
-      catch (err) { console.error(err); break; }
+      catch (err) { break; }
       ranked_data = ranked_data.concat(pageData);
       if (pageData.length < 50) break;
       page++;
