@@ -22,7 +22,7 @@ async function FindUserargs(message, args, prefix) {
 
       if (args.join(" ").includes(`<@${mentionedUser.id}>`)) {
         try {
-          userargs = userData[mentionedUser.id].MinecraftUserID;
+          userargs = userData[mentionedUser.id].MinecraftUserID; 
         } catch (err) {
           message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`No minecraft user found for ${mentionedUser.tag}`)] });
           return;
@@ -40,7 +40,6 @@ async function FindUserargs(message, args, prefix) {
         try {
           userargs = userData[message.author.id].MinecraftUserID;
         } catch (err) {
-          console.error(err);
           message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`Either specify a username, or connect your account with /link`)] });
           return;
         }
@@ -51,7 +50,6 @@ async function FindUserargs(message, args, prefix) {
       try {
         userargs = userData[message.author.id].MinecraftUserID;
       } catch (err) {
-        console.error(err);
         message.reply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`Either specify a username, or connect your account with /link"`)] });
         return;
       }

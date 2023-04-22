@@ -4,11 +4,18 @@ const { Canvas } = require("skia-canvas");
 
 async function getGraph(user, match_data) {
   const elo_history = getEloHistory(user, match_data); // gets elo history (last 50 matches only), will make it so it gets more later
+  
+  let peak = 0;
+  for (let v of elo_history){
+    if(v > peak){
+      peak = v
+    }
+  }
 
   let _days = [];
   for (let i = elo_history.length; i > 0; i--) {
     _days.push(i);
-  }
+  } 
 
   const canvas = new Canvas(1000, 600);
   const ctx = canvas.getContext("2d");
@@ -121,7 +128,7 @@ async function getGraph(user, match_data) {
   const embed = new EmbedBuilder()
     .setColor("Purple")
     .setTitle(`Elo graph of ${username} (${curr_elo} elo #${curr_rank})`)
-    .setDescription(`For full graph, visit [Desktop Folder's website](https://disrespec.tech/elo/?username=${username})`)
+    .setDescription(`Peak elo: ${peak}\nFor full graph, visit [Desktop Folder's website](https://disrespec.tech/elo/?username=${username})`)
     .setThumbnail(avatar_url)
     .setImage("attachment://random.png");
   return { embed, attachment };

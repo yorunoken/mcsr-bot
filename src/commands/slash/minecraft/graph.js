@@ -8,10 +8,17 @@ async function run(interaction, username) {
   await interaction.deferReply();
   const api = new ranked_api();
 
-  let ranked_data, user;
   try {
-    user = await api.getUserStats(username);
-    ranked_data = await api.getRecentMatch(username, { match_type: 2, count: 50 });
+    var user = await api.getUserStats(username);
+    var ranked_data = [];
+    var page = 0;
+    while (page < 100) {
+      try { var pageData = await api.getRecentMatch(username, { match_type: 2, count: 50, page: page }); }
+      catch (err) { console.error(err); break; }
+      ranked_data = ranked_data.concat(pageData);
+      if (pageData.length < 50) break;
+      page++;
+    }
   } catch (err) {
     await interaction.editReply({ ephemeral: true, content: "", embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;

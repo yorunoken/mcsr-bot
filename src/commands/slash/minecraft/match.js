@@ -57,7 +57,9 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
   });
 
   collector.on("end", async (i) => {
-    await response.edit({ embeds: [i.message.embeds[0]], components: [] });
+    if (i.message !== undefined) {
+      await response.edit({ embeds: [i.message.embeds[0]], components: [] });
+    }
   });
 }
 

@@ -11,7 +11,8 @@ async function run(client, message, args, prefix) {
   let _userArgs;
 
   var userArgs = await FindUserargs(message, args, prefix);
-
+  if (userArgs === undefined) return;
+    
   if (!Array.isArray(userArgs)) {
     _userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
   } else {

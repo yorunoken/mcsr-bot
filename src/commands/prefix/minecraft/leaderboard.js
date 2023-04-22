@@ -6,7 +6,7 @@ async function run(client, message, args, prefix) {
 
   const api = new ranked_api();
 
-  let page = 1;
+  var page = 1;
   if (args.includes("-p")) {
     page = Number(args[args.indexOf("-p") + 1]);
     if (isNaN(page)) {

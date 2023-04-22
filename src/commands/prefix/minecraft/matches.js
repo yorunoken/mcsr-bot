@@ -13,6 +13,7 @@ async function run(client, message, args, prefix) {
   let isI = false;
 
   let userArgs = await FindUserargs(message, args, prefix);
+  if (userArgs === undefined) return;
 
   if (args.includes("-i")) {
     if (args[1] == "-i") {

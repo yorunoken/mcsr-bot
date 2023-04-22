@@ -10,6 +10,7 @@ async function run(client, message, args, prefix) {
   const api = new ranked_api();
 
   var userArgs = await FindUserargs(message, args, prefix);
+  if (userArgs === undefined) return;
 
   try {
     if (args[0] == undefined) {
@@ -22,10 +23,9 @@ async function run(client, message, args, prefix) {
 
   userArgs = userArgs.replace(/!{ENCRYPTED}$/, "");
 
-  let ranked_data, user;
   try {
-    user = await api.getUserStats(userArgs);
-    ranked_data = await api.getRecentMatch(userArgs, { match_type: 2, count: 50 });
+    var user = await api.getUserStats(userArgs);
+    var ranked_data = await api.getRecentMatch(userArgs, { match_type: 2, count: 50 });
   } catch (err) {
     message.channel.send({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`${err}`)] });
     return;
