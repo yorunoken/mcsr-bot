@@ -21,7 +21,7 @@ const tierRanges = {
 function findTier(elo) {
   let _elo = elo;
   let tier = "Unknown";
-  let nextTier = "Feinberg lookin ass";
+  let nextTier = "Unknown";
   let eloNeeded = 0;
 
   for (const [key, value] of Object.entries(tierRanges)) {
