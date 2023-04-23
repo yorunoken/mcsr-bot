@@ -125,14 +125,12 @@ module.exports = {
     .setDescription("Get a user's mcsr ranked profile and stats")
     .addStringOption((option) => option.setName("username").setDescription("get a profile by username").setRequired(false)),
   run: async (client, interaction, db) => {
-    const filter = { [interaction.user.id]: { $exists: true } };
     const collection = db.collection("user_data");
 
     let username = interaction.options.getString("username");
     if (!username) {
       try {
-        const users = await collection.findOne(filter);
-        console.log(users);
+        const users = (await collection.findOne({})).users;
         username =
           users[interaction.user.id].MinecraftUserID ??
           (() => {

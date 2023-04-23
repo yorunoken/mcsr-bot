@@ -64,7 +64,7 @@ module.exports = {
     let username = interaction.options.getString("user");
     if (!username) {
       try {
-        const users = await collection.findOne({});
+        const users = (await collection.findOne({})).users;
         username =
           users[interaction.user.id].MinecraftUserID ??
           (() => {

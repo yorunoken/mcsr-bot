@@ -78,7 +78,7 @@ module.exports = {
     const opponent = interaction.options.getString("opponent") ?? undefined;
     let username = interaction.options.getString("user");
     if (!username) {
-      const users = await collection.findOne({});
+      const users = (await collection.findOne({})).users;
       try {
         username =
           users[interaction.user.id].MinecraftUserID ??
