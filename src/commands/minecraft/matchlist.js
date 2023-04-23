@@ -49,6 +49,42 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, p
   });
 }
 
+async function getUser(interaction, collection, ENCRYPTED) {
+  let user = interaction.options.getString("user");
+  const regex = /^<@\d+>$/;
+  if (regex.test(user)) {
+    const userID = user.match(/\d+/)[0];
+    try {
+      const users = (await collection.findOne({})).users;
+      user =
+        users[userID].MinecraftUserID ??
+        (() => {
+          throw new Error("no userarg");
+        })();
+    } catch (err) {
+      await interaction.reply({ ephmeral: true, content: "The discord user you have provided does not have an account linked." });
+      return false;
+    }
+    user = user.replace(/!{ENCRYPTED}$/, "");
+  }
+  if (!user) {
+    try {
+      const users = (await collection.findOne({})).users;
+      user =
+        users[interaction.user.id].MinecraftUserID ??
+        (() => {
+          throw new Error("no userarg");
+        })();
+    } catch (err) {
+      await interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
+      return false;
+    }
+    user = user.replace(/!{ENCRYPTED}$/, "");
+    ENCRYPTED = true;
+  }
+  return { user, ENCRYPTED };
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("matchlist")
@@ -61,25 +97,13 @@ module.exports = {
     const collection = db.collection("user_data");
     let ENCRYPTED = false;
     const opponent = interaction.options.getString("opponent") ?? undefined;
-    let username = interaction.options.getString("user");
-    if (!username) {
-      try {
-        const users = (await collection.findOne({})).users;
-        username =
-          users[interaction.user.id].MinecraftUserID ??
-          (() => {
-            throw new Error("no userarg");
-          })();
-      } catch (err) {
-        interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
-        return;
-      }
-      username = username.replace(/!{ENCRYPTED}$/, "");
-      ENCRYPTED = true;
-    }
+
+    const userOptions = await getUser(interaction, collection, ENCRYPTED);
+    if (!userOptions) return;
+
     const match_type = interaction.options.getString("type") ?? undefined;
     let page = interaction.options.getInteger("page") ?? 1;
 
-    await run(interaction, username, opponent, ENCRYPTED, match_type, page);
+    await run(interaction, userOptions.user, opponent, userOptions.ENCRYPTED, match_type, page);
   },
 };

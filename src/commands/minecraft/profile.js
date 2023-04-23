@@ -119,29 +119,51 @@ async function run(interaction, user, collection) {
   interaction.editReply({ content: "", embeds: [embed] });
 }
 
+async function getUser(interaction, collection) {
+  let user = interaction.options.getString("user");
+  const regex = /^<@\d+>$/;
+  if (regex.test(user)) {
+    const userID = user.match(/\d+/)[0];
+    try {
+      const users = (await collection.findOne({})).users;
+      user =
+        users[userID].MinecraftUserID ??
+        (() => {
+          throw new Error("no userarg");
+        })();
+    } catch (err) {
+      await interaction.reply({ ephmeral: true, content: "The discord user you have provided does not have an account linked." });
+      return false;
+    }
+    user = user.replace(/!{ENCRYPTED}$/, "");
+  }
+  if (!user) {
+    try {
+      const users = (await collection.findOne({})).users;
+      user =
+        users[interaction.user.id].MinecraftUserID ??
+        (() => {
+          throw new Error("no userarg");
+        })();
+    } catch (err) {
+      await interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
+      return false;
+    }
+    user = user.replace(/!{ENCRYPTED}$/, "");
+  }
+  return user;
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("profile")
     .setDescription("Get a user's mcsr ranked profile and stats")
-    .addStringOption((option) => option.setName("username").setDescription("get a profile by username").setRequired(false)),
+    .addStringOption((option) => option.setName("user").setDescription("get a profile by username").setRequired(false)),
   run: async (client, interaction, db) => {
     const collection = db.collection("user_data");
 
-    let username = interaction.options.getString("username");
-    if (!username) {
-      try {
-        const users = (await collection.findOne({})).users;
-        username =
-          users[interaction.user.id].MinecraftUserID ??
-          (() => {
-            throw new Error("no userarg");
-          })();
-      } catch (err) {
-        interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
-        return;
-      }
-      username = username.replace(/!{ENCRYPTED}$/, "");
-    }
+    const username = await getUser(interaction, collection);
+    if (!username) return;
 
     await run(interaction, username, collection);
   },

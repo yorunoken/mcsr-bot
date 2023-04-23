@@ -1,11 +1,11 @@
 const { getGraph } = require("../../utilities/functions/getGraph.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, CommandInteraction } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 async function sendGraphReply({ user, ranked_data, interaction, page }) {
   const _function = await getGraph(user, ranked_data);
-  await interaction.editReply({ content: `*Loaded until page index #${page}.*\n*Loaded ${_function.games} games.*`, embeds: [_function.embed], files: [_function.attachment] });
+  await interaction.editReply({ content: `*Loaded until page index #${page}.*\n*Loaded ${_function.games - 1} games.*`, embeds: [_function.embed], files: [_function.attachment] });
 }
 
 async function run(interaction, username) {
@@ -36,29 +36,51 @@ async function run(interaction, username) {
   await sendGraphReply({ user, ranked_data, interaction, page });
 }
 
+async function getUser(interaction, collection) {
+  let user = interaction.options.getString("user");
+  const regex = /^<@\d+>$/;
+  if (regex.test(user)) {
+    const userID = user.match(/\d+/)[0];
+    try {
+      const users = (await collection.findOne({})).users;
+      user =
+        users[userID].MinecraftUserID ??
+        (() => {
+          throw new Error("no userarg");
+        })();
+    } catch (err) {
+      await interaction.reply({ ephmeral: true, content: "The discord user you have provided does not have an account linked." });
+      return false;
+    }
+    user = user.replace(/!{ENCRYPTED}$/, "");
+  }
+  if (!user) {
+    try {
+      const users = (await collection.findOne({})).users;
+      user =
+        users[interaction.user.id].MinecraftUserID ??
+        (() => {
+          throw new Error("no userarg");
+        })();
+    } catch (err) {
+      await interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
+      return false;
+    }
+    user = user.replace(/!{ENCRYPTED}$/, "");
+  }
+  return user;
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("graph")
     .setDescription("Get an elo graph of recent matches")
-    .addStringOption((option) => option.setName("username").setDescription("Get graph by username").setRequired(false)),
+    .addStringOption((option) => option.setName("user").setDescription("Get graph by username, or by tagging someone").setRequired(false)),
   run: async (client, interaction, db) => {
     const collection = db.collection("user_data");
-    let username = interaction.options.getString("username");
-    if (!username) {
-      try {
-        const users = (await collection.findOne({})).users;
-        username =
-          users[interaction.user.id].MinecraftUserID ??
-          (() => {
-            throw new Error("no userarg");
-          })();
-      } catch (err) {
-        await interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
-        return;
-      }
-      username = username.replace(/!{ENCRYPTED}$/, "");
-    }
 
+    const username = await getUser(interaction, collection);
+    if (!username) return;
     await run(interaction, username);
   },
 };
