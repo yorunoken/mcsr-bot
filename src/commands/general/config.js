@@ -16,8 +16,8 @@ async function run(interaction, values, db) {
 
 async function writeConfig(c_n, c_v, interaction, db) {
   const collection = db.collection("user_data");
-  const filter = { [interaction.user.id]: { $exists: true } };
-  const update = { $set: { [`user.${interaction.user.id}.${c_n}`]: c_v } };
+  const filter = {};
+  const update = { $set: { [`users.${interaction.user.id}.${c_n}`]: c_v } };
   const options = { upsert: true };
 
   await collection.updateOne(filter, update, options);

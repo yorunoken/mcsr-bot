@@ -67,7 +67,7 @@ async function run(interaction, user, collection) {
   }
   const winrate = (combined_records.win / (combined_records.win + combined_records.draw + combined_records.lose)) * 100;
 
-  const discord_ID = data.connections.discord.id;
+  const discord_ID = data.connections.discord?.id;
   const discord_row = discord_ID ? `<:discord:1095835124018458634> **Discord:** <@${discord_ID}>` : "<:discord:1095835124018458634> **Discord:** **Not linked**";
 
   const youtube_ID = data.connections.youtube;

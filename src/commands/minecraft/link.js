@@ -20,7 +20,7 @@ async function run(interaction, username, db) {
   const avatar_url = `https://crafatar.com/avatars/${user_id}.png?overlay`;
 
   const collection = db.collection("user_data");
-  const filter = { [interaction.user.id]: { $exists: true } };
+  const filter = {};
   const update = { $set: { [`users.${interaction.user.id}.MinecraftUserID`]: `${user_id}!{ENCRYPTED}` } };
   const options = { upsert: true };
 
