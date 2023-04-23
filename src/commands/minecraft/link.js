@@ -21,7 +21,7 @@ async function run(interaction, username, db) {
 
   const collection = db.collection("user_data");
   const filter = { [interaction.user.id]: { $exists: true } };
-  const update = { $set: { [`${interaction.user.id}.MinecraftUserID`]: `${user_id}!{ENCRYPTED}` } };
+  const update = { $set: { [`users.${interaction.user.id}.MinecraftUserID`]: `${user_id}!{ENCRYPTED}` } };
   const options = { upsert: true };
 
   await collection.updateOne(filter, update, options);
