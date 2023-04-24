@@ -24,7 +24,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, p
   const response = await interaction.editReply({ embeds: [embed], components: [row] });
 
   const filter = (i) => i.user.id === interaction.user.id;
-  const collector = response.createMessageComponentCollector({ time: 60000, filter: filter });
+  const collector = response.createMessageComponentCollector({ time: 35000, filter: filter });
 
   let currentMessage = response;
   collector.on("collect", async (i) => {
