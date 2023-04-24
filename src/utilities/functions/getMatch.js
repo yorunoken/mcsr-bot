@@ -151,7 +151,7 @@ async function getMatch(match, ENCRYPTED, userArgs, index, collection) {
     .setFields(
       {
         name: "User",
-        value: `**[${user_username}](https://disrespec.tech/elo/?username=${user_username}) - ${user_curr_elo} elo (#${user_curr_rank})**\n${user_elo_change}${user_uuid}`,
+        value: `**[${user_username}](https://disrespec.tech/elo/?username=${user_username}) - ${user_curr_elo} elo (#${user_curr_rank})**\n${user_elo_change}`,
         inline: true,
       },
       {
@@ -161,7 +161,7 @@ async function getMatch(match, ENCRYPTED, userArgs, index, collection) {
       },
       {
         name: "Opponent",
-        value: `**[${opponent_username}](https://disrespec.tech/elo/?username=${opponent_username}) - ${opponent_curr_elo} elo (#${opponent_curr_rank})**\n${opponent_elo_change}${opponent_uuid}`,
+        value: `**[${opponent_username}](https://disrespec.tech/elo/?username=${opponent_username}) - ${opponent_curr_elo} elo (#${opponent_curr_rank})**\n${opponent_elo_change}`,
         inline: true,
       }
     )
