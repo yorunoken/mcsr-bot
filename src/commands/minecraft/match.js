@@ -60,7 +60,11 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
   });
 
   collector.on("end", async (i) => {
-    await currentMessage.edit({ components: [] });
+    try {
+      await currentMessage.edit({ components: [] });
+    } catch (err) {
+      await interaction.editReply({ components: [] });
+    }
   });
 }
 

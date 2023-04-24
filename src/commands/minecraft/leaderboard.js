@@ -41,7 +41,11 @@ async function run(interaction, page) {
   });
 
   collector.on("end", async (i) => {
-    await currentMessage.edit({ components: [] });
+    try {
+      await currentMessage.edit({ components: [] });
+    } catch (err) {
+      await interaction.editReply({ components: [] });
+    }
   });
 }
 
