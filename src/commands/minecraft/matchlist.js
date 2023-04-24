@@ -35,7 +35,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, p
       }
       const embed = await getMatchesList(ranked_data, ENCRYPTED, username, page);
 
-      await response.edit({ embeds: [embed], components: [row] });
+      await i.update({ embeds: [embed], components: [row] });
     } else if (i.customId === "prev") {
       page--;
 
@@ -44,7 +44,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, p
       }
       const embed = await getMatchesList(ranked_data, ENCRYPTED, username, page);
 
-      await response.edit({ embeds: [embed], components: [row] });
+      await i.update({ embeds: [embed], components: [row] });
     }
   });
 }

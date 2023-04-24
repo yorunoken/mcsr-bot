@@ -26,7 +26,7 @@ async function run(interaction, page) {
         page--;
       }
       const embed = await getLeaderboard(leaderboard_data, page);
-      await response.edit({ embeds: [embed], components: [row] });
+      await i.update({ embeds: [embed], components: [row] });
     } else if (i.customId === "prev") {
       page--;
 
@@ -34,7 +34,7 @@ async function run(interaction, page) {
         page++;
       }
       const embed = await getLeaderboard(leaderboard_data, page);
-      await response.edit({ embeds: [embed], components: [row] });
+      await i.update({ embeds: [embed], components: [row] });
     }
   });
 }

@@ -37,7 +37,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
         }
         const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index, collection);
 
-        await response.edit({ embeds: [embed], components: [row] });
+        await i.update({ embeds: [embed], components: [row] });
       } else if (i.customId === "prev") {
         index--;
 
@@ -46,20 +46,20 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
         }
         const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index, collection);
 
-        await response.edit({ embeds: [embed], components: [row] });
+        await i.update({ embeds: [embed], components: [row] });
       } else if (i.customId === "stats") {
         let title = i.message.embeds[0].title;
         const matchID = title.replace("Match ID: ", "");
         const match = await api.getMatchStats(matchID);
         const embed = await getMatchStats(match);
-        await response.edit({ embeds: [embed], components: [] });
+        await i.update({ embeds: [embed], components: [] });
       }
     } catch (e) {}
   });
 
   collector.on("end", async (i) => {
     if (i.message !== undefined) {
-      await response.edit({ embeds: [i.message.embeds[0]], components: [] });
+      await i.update({ embeds: [i.message.embeds[0]], components: [] });
     }
   });
 }
