@@ -51,10 +51,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, p
   });
 
   collector.on("end", async (i) => {
-    if (interaction) {
-      console.log(currentMessage);
-      await currentMessage.edit({ embeds: [currentMessage.embeds[0]], components: [] });
-    }
+    await currentMessage.edit({ components: [] });
   });
 }
 

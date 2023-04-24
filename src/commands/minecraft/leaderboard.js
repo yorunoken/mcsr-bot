@@ -41,10 +41,7 @@ async function run(interaction, page) {
   });
 
   collector.on("end", async (i) => {
-    if (interaction) {
-      console.log(currentMessage);
-      await currentMessage.edit({ embeds: [currentMessage.embeds[0]], components: [] });
-    }
+    await currentMessage.edit({ components: [] });
   });
 }
 

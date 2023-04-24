@@ -27,7 +27,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
   const filter = (i) => i.user.id === interaction.user.id;
   const collector = response.createMessageComponentCollector({ time: 35000, filter: filter });
 
-  let currentMessage = response;
+  let currentMessage = interaction;
   collector.on("collect", async (i) => {
     try {
       if (i.customId === "next") {
@@ -60,10 +60,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
   });
 
   collector.on("end", async (i) => {
-    if (interaction) {
-      console.log(currentMessage);
-      await currentMessage.edit({ embeds: [currentMessage.embeds[0]], components: [] });
-    }
+    await currentMessage.edit({ components: [] });
   });
 }
 
