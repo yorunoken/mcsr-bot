@@ -18,6 +18,7 @@ async function run(interaction, page) {
   const filter = (i) => i.user.id === interaction.user.id;
   const collector = response.createMessageComponentCollector({ time: 60000, filter: filter });
 
+  let currentMessage = response;
   collector.on("collect", async (i) => {
     if (i.customId === "next") {
       page++;
@@ -35,6 +36,14 @@ async function run(interaction, page) {
       }
       const embed = await getLeaderboard(leaderboard_data, page);
       await i.update({ embeds: [embed], components: [row] });
+    }
+    currentMessage = i;
+  });
+
+  collector.on("end", async (i) => {
+    if (interaction) {
+      console.log(currentMessage);
+      await currentMessage.edit({ embeds: [currentMessage.embeds[0]], components: [] });
     }
   });
 }

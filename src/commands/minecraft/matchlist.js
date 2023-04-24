@@ -26,6 +26,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, p
   const filter = (i) => i.user.id === interaction.user.id;
   const collector = response.createMessageComponentCollector({ time: 60000, filter: filter });
 
+  let currentMessage = response;
   collector.on("collect", async (i) => {
     if (i.customId === "next") {
       page++;
@@ -45,6 +46,14 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, p
       const embed = await getMatchesList(ranked_data, ENCRYPTED, username, page);
 
       await i.update({ embeds: [embed], components: [row] });
+    }
+    currentMessage = i;
+  });
+
+  collector.on("end", async (i) => {
+    if (interaction) {
+      console.log(currentMessage);
+      await currentMessage.edit({ embeds: [currentMessage.embeds[0]], components: [] });
     }
   });
 }

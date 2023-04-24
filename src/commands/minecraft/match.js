@@ -16,17 +16,18 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
     return;
   }
 
-  const nextPage = new ButtonBuilder().setCustomId("next").setLabel("Next match").setStyle(ButtonStyle.Secondary);
+  const nextPage = new ButtonBuilder().setCustomId("next").setLabel("➡️").setStyle(ButtonStyle.Secondary);
   const stats = new ButtonBuilder().setCustomId("stats").setLabel("Get statistics").setStyle(ButtonStyle.Primary);
-  const prevPage = new ButtonBuilder().setCustomId("prev").setLabel("Previous match").setStyle(ButtonStyle.Secondary);
+  const prevPage = new ButtonBuilder().setCustomId("prev").setLabel("⬅️").setStyle(ButtonStyle.Secondary);
   const row = new ActionRowBuilder().addComponents(prevPage, stats, nextPage);
 
-  const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index, collection);
+  const embed = await getMatch(ranked_data[index - 1], ENCRYPTED, username, index - 1, collection);
   const response = await interaction.editReply({ content: "", embeds: [embed], components: [row] });
 
   const filter = (i) => i.user.id === interaction.user.id;
-  const collector = response.createMessageComponentCollector({ time: 20000, filter: filter });
+  const collector = response.createMessageComponentCollector({ time: 4000, filter: filter });
 
+  let currentMessage = response;
   collector.on("collect", async (i) => {
     try {
       if (i.customId === "next") {
@@ -35,7 +36,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
         if (index > ranked_data.length) {
           index--;
         }
-        const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index, collection);
+        const embed = await getMatch(ranked_data[index - 1], ENCRYPTED, username, index - 1, collection);
 
         await i.update({ embeds: [embed], components: [row] });
       } else if (i.customId === "prev") {
@@ -44,7 +45,7 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
         if (0 >= index) {
           index++;
         }
-        const embed = await getMatch(ranked_data[index], ENCRYPTED, username, index, collection);
+        const embed = await getMatch(ranked_data[index - 1], ENCRYPTED, username, index - 1, collection);
 
         await i.update({ embeds: [embed], components: [row] });
       } else if (i.customId === "stats") {
@@ -54,12 +55,14 @@ async function run(interaction, username, opponentname, ENCRYPTED, match_type, i
         const embed = await getMatchStats(match);
         await i.update({ embeds: [embed], components: [] });
       }
+      currentMessage = i;
     } catch (e) {}
   });
 
   collector.on("end", async (i) => {
-    if (i.message !== undefined) {
-      await i.update({ embeds: [i.message.embeds[0]], components: [] });
+    if (interaction) {
+      console.log(currentMessage);
+      await currentMessage.edit({ embeds: [currentMessage.embeds[0]], components: [] });
     }
   });
 }
@@ -117,10 +120,7 @@ module.exports = {
     if (!userOptions) return;
 
     const match_type = interaction.options.getString("type") ?? undefined;
-    let index = interaction.options.getInteger("index") - 1 ?? 0;
-    if (index < 0) {
-      index = 0;
-    }
+    const index = interaction.options.getInteger("index") ?? 1;
 
     await run(interaction, userOptions.user, opponent, userOptions.ENCRYPTED, match_type, index, collection);
   },
