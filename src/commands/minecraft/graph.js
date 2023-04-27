@@ -5,7 +5,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 
 async function sendGraphReply({ user, ranked_data, interaction, page }) {
   const _function = await getGraph(user, ranked_data);
-  if (_function.games === 1) {
+  if (ranked_data.length === 0) {
     await interaction.editReply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`No games found for user \`${user.nickname}\`.`)] });
     return true;
   }
