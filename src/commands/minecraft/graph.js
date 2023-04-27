@@ -5,8 +5,8 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 
 async function sendGraphReply({ user, ranked_data, interaction, page }) {
   const _function = await getGraph(user, ranked_data);
-  if (ranked_data.length === 0) {
-    await interaction.editReply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`No games found for user \`${user.nickname}\`.`)] });
+  if (_function.games === 1) {
+    await interaction.editReply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`user \`${user.nickname}\` doesn't have more than 5 games played.`)] });
     return true;
   }
   await interaction.editReply({ content: `*Loaded until page index #${page}.*\n*Loaded ${_function.games - 1} games.*`, embeds: [_function.embed], files: [_function.attachment] });
