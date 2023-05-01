@@ -1,10 +1,16 @@
 const { getGraph } = require("../../utilities/functions/getGraph.js");
 const { ranked_api } = require("mcsr-ranked-api");
-const { EmbedBuilder, CommandInteraction } = require("discord.js");
+const { EmbedBuilder, ChatInputCommandInteraction } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
-async function sendGraphReply({ user, ranked_data, interaction, page }) {
-  const _function = await getGraph(user, ranked_data);
+/**
+ *
+ * @param {ChatInputCommandInteraction} interaction
+ * @returns
+ */
+
+async function sendGraphReply({ user, ranked_data, interaction, page, collection }) {
+  const _function = await getGraph(user, ranked_data, collection);
   if (_function.games === 1) {
     await interaction.editReply({ embeds: [new EmbedBuilder().setColor("Purple").setDescription(`user \`${user.nickname}\` doesn't have more than 5 games played.`)] });
     return true;
@@ -13,8 +19,7 @@ async function sendGraphReply({ user, ranked_data, interaction, page }) {
   return false;
 }
 
-async function run(interaction, username) {
-  await interaction.deferReply();
+async function run(interaction, username, collection) {
   const api = new ranked_api();
   var page = 0;
 
@@ -29,7 +34,7 @@ async function run(interaction, username) {
         break;
       }
       ranked_data = ranked_data.concat(pageData);
-      const result = await sendGraphReply({ user, ranked_data, interaction, page });
+      const result = await sendGraphReply({ user, ranked_data, interaction, page, collection });
       if (result) return;
       if (pageData.length < 50) break;
       page++;
@@ -55,7 +60,7 @@ async function getUser(interaction, collection) {
           throw new Error("no userarg");
         })();
     } catch (err) {
-      await interaction.reply({ ephmeral: true, content: "The discord user you have provided does not have an account linked." });
+      await interaction.editReply({ ephmeral: true, content: "The discord user you have provided does not have an account linked." });
       return false;
     }
     user = user.replace(/!{ENCRYPTED}$/, "");
@@ -69,7 +74,7 @@ async function getUser(interaction, collection) {
           throw new Error("no userarg");
         })();
     } catch (err) {
-      await interaction.reply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
+      await interaction.editReply({ ephmeral: true, content: "Either specify a username, or connect your account with /link" });
       return false;
     }
     user = user.replace(/!{ENCRYPTED}$/, "");
@@ -83,10 +88,11 @@ module.exports = {
     .setDescription("Get an elo graph of recent matches")
     .addStringOption((option) => option.setName("user").setDescription("Get graph by username, or by tagging someone").setRequired(false)),
   run: async (client, interaction, db) => {
+    await interaction.deferReply();
     const collection = db.collection("user_data");
 
     const username = await getUser(interaction, collection);
     if (!username) return;
-    await run(interaction, username);
+    await run(interaction, username, collection);
   },
 };
