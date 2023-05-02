@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { ranked_api } = require("mcsr-ranked-api");
 const { getMatch } = require("../../utilities/functions/getMatch.js");
 const { getMatchStats } = require("../../utilities/functions/getMatchStats");
