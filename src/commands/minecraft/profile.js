@@ -36,14 +36,14 @@ async function run(interaction, user, collection) {
     curr_rank = "-";
   }
 
-  const total_plays = data.total_played.toLocaleString();
-  const season_plays = data.season_played.toLocaleString();
+  const total_plays = data.total_played?.toLocaleString();
+  const season_plays = data.season_played?.toLocaleString();
 
-  const highest_streak = data.highest_winstreak.toLocaleString();
-  const curr_streak = data.current_winstreak.toLocaleString();
+  const highest_streak = data.highest_winstreak?.toLocaleString();
+  const curr_streak = data.current_winstreak?.toLocaleString();
 
-  const elo_best = data.best_elo_rate.toLocaleString();
-  const elo_last_season = data.prev_elo_rate.toLocaleString();
+  const elo_best = data.best_elo_rate?.toLocaleString();
+  const elo_last_season = data.prev_elo_rate?.toLocaleString();
 
   const total_seconds = data.best_record_time / 1000;
   let minutes = Math.floor(total_seconds / 60)
